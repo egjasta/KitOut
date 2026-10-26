@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KitOut - On-Site Operational Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: #2a2a2a;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border-top: 6px solid #FFC107;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #FFC107;
+            margin: 0 0 5px 0;
+            font-size: 2.2em;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .tagline {
+            text-align: center;
+            font-style: italic;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+        .trade-card {
+            display: block;
+            background: #333;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid #444;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            color: inherit;
+            text-decoration: none;
+        }
+        .trade-card:hover {
+            border-color: #FFC107;
+            background: #3a3a3a;
+            transform: translateY(-2px);
+        }
+        .trade-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .trade-card:last-of-type {
+            margin-bottom: 0;
+        }
+        .session-row {
+            text-align: center;
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 18px;
+        }
+        .session-row a {
+            color: #FFC107;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .session-row a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KitOut</h1>
+        <div class="tagline">Tell us what you're building, and we'll tell you what you need.</div>
+        <div class="session-row">
+            Signed in as <span id="sessionEmail"></span> · <a href="#" onclick="logOut(); return false;">Log out</a>
+        </div>
+
+        <a class="trade-card" href="painting.html">
+            <div class="trade-title">🎨 Painting & Decorating</div>
+        </a>
+        <a class="trade-card" href="tiling.html">
+            <div class="trade-title">🧱 Wall & Floor Tiling</div>
+        </a>
+        <a class="trade-card" href="drywall.html">
+            <div class="trade-title">🪵 Drywall & Stud Walls</div>
+        </a>
+        <a class="trade-card" href="decking.html">
+            <div class="trade-title">🏡 Garden Decking & Flooring</div>
+        </a>
+        <a class="trade-card" href="snaglist.html">
+            <div class="trade-title">📋 On-Site SnagList Tracker</div>
+        </a>
+    </div>
+    <script>
+        const session = localStorage.getItem("kitout_user_session");
+        if (!session) {
+            window.location.href = "index.html";
+        } else {
+            document.getElementById("sessionEmail").innerText = session;
+        }
+
+        function logOut() {
+            localStorage.removeItem("kitout_user_session");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

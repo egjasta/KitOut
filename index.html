@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KitOut - On-Site Operational Dashboard</title>
+    <title>KitOut - Secure Portal</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -14,26 +16,26 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
         .container {
-            max-width: 480px;
+            max-width: 420px;
             width: 100%;
             background: #2a2a2a;
-            padding: 25px;
+            padding: 30px;
             border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border-top: 6px solid #FFC107; /* DeWalt Contractor Yellow */
+            border-top: 6px solid #FFC107;
             box-sizing: border-box;
-            margin-top: 20px;
         }
         h1 {
             text-align: center;
             color: #FFC107;
             margin: 0 0 5px 0;
-            font-size: 2.2em;
+            font-size: 2.4em;
             font-weight: 800;
-            letter-spacing: -0.5px;
         }
         .tagline {
             text-align: center;
@@ -41,35 +43,54 @@
             color: #aaa;
             margin-bottom: 30px;
             font-size: 0.95em;
-            line-height: 1.4;
         }
-        .trade-card {
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
             display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ddd;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
             background: #333;
-            padding: 18px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            cursor: pointer;
             border: 1px solid #444;
-            transition: all 0.2s ease;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
             box-sizing: border-box;
-            color: inherit;
-            text-decoration: none;
         }
-        .trade-card:hover {
+        input:focus {
             border-color: #FFC107;
-            background: #3a3a3a;
-            transform: translateY(-2px);
+            outline: none;
         }
-        .trade-title {
-            font-weight: 600;
+        .action-btn {
+            display: block;
+            width: 100%;
+            background: #FFC107;
+            color: #111;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
             font-size: 1.1em;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            border: none;
+            cursor: pointer;
+            margin-top: 25px;
         }
-        .trade-card:last-child {
-            margin-bottom: 0;
+        .action-btn:hover { background: #e0a800; }
+        .switch-mode {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .switch-mode span {
+            color: #FFC107;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -78,21 +99,61 @@
         <h1>KitOut</h1>
         <div class="tagline">Tell us what you're building, and we'll tell you what you need.</div>
 
-        <a class="trade-card" href="painting.html">
-            <div class="trade-title">🎨 Painting & Decorating</div>
-        </a>
-        <a class="trade-card" href="tiling.html">
-            <div class="trade-title">🧱 Wall & Floor Tiling</div>
-        </a>
-        <a class="trade-card" href="drywall.html">
-            <div class="trade-title">🪵 Drywall & Stud Walls</div>
-        </a>
-        <a class="trade-card" href="decking.html">
-            <div class="trade-title">🏡 Garden Decking & Flooring</div>
-        </a>
-        <a class="trade-card" href="snaglist.html">
-            <div class="trade-title">📋 On-Site SnagList Tracker</div>
-        </a>
+        <h2 id="formTitle" style="text-align: center; margin-bottom: 20px; font-size: 1.3em;">Create Free Account</h2>
+
+        <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" id="userEmail" placeholder="name@company.com">
+        </div>
+
+        <div class="input-group">
+            <label>Secure Password</label>
+            <input type="password" id="userPassword" placeholder="••••••••">
+        </div>
+
+        <button class="action-btn" id="submitBtn" onclick="handleAuth()">🚀 Register Free Account</button>
+
+        <div class="switch-mode" id="toggleAuthMode" onclick="toggleMode()">
+            Already have an account? <span>Log In Here</span>
+        </div>
     </div>
+
+    <script>
+        let isLoginMode = false;
+
+        if (localStorage.getItem("kitout_user_session")) {
+            window.location.href = "dashboard.html";
+        }
+
+        function toggleMode() {
+            isLoginMode = !isLoginMode;
+            const formTitle = document.getElementById("formTitle");
+            const submitBtn = document.getElementById("submitBtn");
+            const toggleText = document.getElementById("toggleAuthMode");
+
+            if (isLoginMode) {
+                formTitle.innerText = "Log In to Your Dashboard";
+                submitBtn.innerText = "🔒 Secure Log In";
+                toggleText.innerHTML = "New to KitOut? <span>Create an Account</span>";
+            } else {
+                formTitle.innerText = "Create Free Account";
+                submitBtn.innerText = "🚀 Register Free Account";
+                toggleText.innerHTML = "Already have an account? <span>Log In Here</span>";
+            }
+        }
+
+        function handleAuth() {
+            const email = document.getElementById("userEmail").value.trim();
+            const pass = document.getElementById("userPassword").value.trim();
+
+            if (!email || !pass) {
+                alert("Please enter a valid email and password.");
+                return;
+            }
+
+            localStorage.setItem("kitout_user_session", email);
+            window.location.href = "dashboard.html";
+        }
+    </script>
 </body>
 </html>
