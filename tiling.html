@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KitOut - Wall & Floor Tiling</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border-top: 6px solid #FFC107;
+            box-sizing: border-box;
+        }
+        .back-btn {
+            color: #FFC107;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        h1 {
+            color: #FFC107;
+            margin: 0 0 20px 0;
+            font-size: 1.8em;
+            font-weight: 800;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.95em;
+            color: #ddd;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #FFC107;
+            outline: none;
+        }
+        input[type="range"] {
+            padding: 0;
+            accent-color: #FFC107;
+        }
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #333;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #444;
+        }
+        .toggle-label {
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #555; transition: .3s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #FFC107; }
+        input:checked + .slider:before { transform: translateX(24px); }
+        .hidden-panel {
+            display: none;
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px dashed #444;
+        }
+        .invoice-card {
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #FFC107;
+            margin-top: 25px;
+        }
+        .invoice-title {
+            font-weight: 700;
+            color: #FFC107;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+            font-size: 1.1em;
+        }
+        .invoice-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            color: #ccc;
+            gap: 12px;
+        }
+        .invoice-row span:last-child {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .invoice-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            border-top: 1px dashed #444;
+            padding-top: 12px;
+            font-weight: 800;
+            font-size: 1.3em;
+            color: #FFC107;
+        }
+        .store-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: #FFC107;
+            color: #111;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+        .store-btn:hover { background: #e0a800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">⬅️ Back to Dashboard</a>
+        <h1>🧱 Tiling Calculator</h1>
+
+        <div class="input-group">
+            <label>Surface Length (metres)</label>
+            <input type="number" id="length" value="4.5" min="0" step="0.1" oninput="calculateTiling()">
+        </div>
+
+        <div class="input-group">
+            <label>Surface Width (metres)</label>
+            <input type="number" id="width" value="3.2" min="0" step="0.1" oninput="calculateTiling()">
+        </div>
+
+        <div class="input-group">
+            <label>Tile Length (cm)</label>
+            <input type="number" id="tileLength" value="30" min="0" step="1" oninput="calculateTiling()">
+        </div>
+
+        <div class="input-group">
+            <label>Tile Width (cm)</label>
+            <input type="number" id="tileWidth" value="60" min="0" step="1" oninput="calculateTiling()">
+        </div>
+
+        <div class="input-group">
+            <label>Tiles Per Box</label>
+            <input type="number" id="tilesPerBox" value="10" min="1" step="1" oninput="calculateTiling()">
+        </div>
+
+        <div class="input-group">
+            <label>Wastage Rate Allowance</label>
+            <select id="wastage" onchange="calculateTiling()">
+                <option value="1.10" selected>10% Standard Waste</option>
+                <option value="1.15">15% Complex Layout Waste</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Project Finish Grade</label>
+            <select id="grade" onchange="calculateTiling()">
+                <option value="Standard">Standard Ceramic Finish</option>
+                <option value="Premium">Premium Porcelain / Stone Finish 💎</option>
+            </select>
+        </div>
+
+        <div class="toggle-group">
+            <span class="toggle-label">➕ Include Labour Costs?</span>
+            <label class="switch">
+                <input type="checkbox" id="includeLabour" onchange="toggleLabourPanel()">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div id="labourPanel" class="hidden-panel">
+            <div class="input-group">
+                <label>Your Daily Trade Rate (£)</label>
+                <input type="number" id="dayRate" value="250" min="0" step="1" oninput="calculateTiling()">
+            </div>
+            <div class="input-group">
+                <label>Estimated Days Needed</label>
+                <input type="number" id="daysNeeded" value="1" min="0" step="0.5" oninput="calculateTilingCustomDays()">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Builder Markup (%)</label>
+            <input type="range" id="markup" min="0" max="50" value="15" oninput="updateMarkupLabel()">
+            <span id="markupLabel" style="font-size: 0.9em; color: #aaa;">15% Markup</span>
+        </div>
+
+        <div class="toggle-group">
+            <span class="toggle-label">Include 20% UK VAT?</span>
+            <label class="switch">
+                <input type="checkbox" id="includeVat" checked onchange="calculateTiling()">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="invoice-card">
+            <div class="invoice-title">🧾 ESTIMATE SUMMARY</div>
+            <div class="invoice-row">
+                <span>Area with Waste:</span>
+                <span id="outArea">0.00 m²</span>
+            </div>
+            <div class="invoice-row">
+                <span>Total Boxes Needed:</span>
+                <span id="outBoxes">0 Boxes</span>
+            </div>
+            <div class="invoice-row">
+                <span>Material Subtotal:</span>
+                <span id="outMaterials">£0.00</span>
+            </div>
+            <div class="invoice-row">
+                <span>Labour Subtotal:</span>
+                <span id="outLabour">£0.00</span>
+            </div>
+            <div class="invoice-row">
+                <span>Gross Margin Profit:</span>
+                <span id="outProfit">£0.00</span>
+            </div>
+            <div class="invoice-row">
+                <span>Calculated VAT:</span>
+                <span id="outVat">£0.00</span>
+            </div>
+            <div class="invoice-total">
+                <span>TOTAL QUOTE:</span>
+                <span id="outTotal">£0.00</span>
+            </div>
+        </div>
+
+        <a href="https://wickes.co.uk" target="_blank" class="store-btn">🛒 Order Project Adhesive via Wickes</a>
+    </div>
+
+    <script>
+        let customDaysSet = false;
+
+        function toggleLabourPanel() {
+            const panel = document.getElementById("labourPanel");
+            const checkbox = document.getElementById("includeLabour");
+            panel.style.display = checkbox.checked ? "block" : "none";
+            calculateTiling();
+        }
+
+        function updateMarkupLabel() {
+            const markup = document.getElementById("markup").value;
+            document.getElementById("markupLabel").innerText = markup + "% Markup";
+            calculateTiling();
+        }
+
+        function calculateTilingCustomDays() {
+            customDaysSet = true;
+            calculateTiling();
+        }
+
+        function calculateTiling() {
+            const length = parseFloat(document.getElementById("length").value) || 0;
+            const width = parseFloat(document.getElementById("width").value) || 0;
+            const tileL = parseFloat(document.getElementById("tileLength").value) || 0;
+            const tileW = parseFloat(document.getElementById("tileWidth").value) || 0;
+            const perBox = parseInt(document.getElementById("tilesPerBox").value) || 1;
+            const wastageRate = parseFloat(document.getElementById("wastage").value) || 1.10;
+            const grade = document.getElementById("grade").value;
+            const includeLabour = document.getElementById("includeLabour").checked;
+            const dayRate = parseFloat(document.getElementById("dayRate").value) || 0;
+            const markupPercent = parseFloat(document.getElementById("markup").value) || 0;
+            const includeVat = document.getElementById("includeVat").checked;
+
+            let baseArea = length * width;
+            let areaWithWaste = baseArea * wastageRate;
+            document.getElementById("outArea").innerText = areaWithWaste.toFixed(2) + " m²";
+
+            let singleTileArea = (tileL * tileW) / 10000;
+            let totalIndividualTiles = singleTileArea > 0
+                ? Math.ceil(Number((areaWithWaste / singleTileArea).toFixed(10)))
+                : 0;
+            let totalBoxes = Math.ceil(totalIndividualTiles / perBox) || 0;
+            document.getElementById("outBoxes").innerText = totalBoxes + " Boxes (" + totalIndividualTiles + " Tiles)";
+
+            let adhesiveBags = Math.ceil((baseArea * 4) / 20) || 0;
+            let groutBags = Math.ceil((baseArea * 0.5) / 5) || 0;
+
+            let materialSubtotal = 0;
+            if (grade === "Premium") {
+                materialSubtotal = (areaWithWaste * 45.00) + (adhesiveBags * 28.50) + (groutBags * 14.50);
+            } else {
+                materialSubtotal = (areaWithWaste * 25.00) + (adhesiveBags * 17.50) + (groutBags * 14.50);
+            }
+            document.getElementById("outMaterials").innerText = "£" + materialSubtotal.toFixed(2);
+
+            if (!customDaysSet && areaWithWaste > 0) {
+                let autoDays = Math.ceil(areaWithWaste / 8 * 2) / 2;
+                document.getElementById("daysNeeded").value = autoDays;
+            }
+            const days = parseFloat(document.getElementById("daysNeeded").value) || 0;
+            let labourSubtotal = includeLabour ? (days * dayRate) : 0;
+            document.getElementById("outLabour").innerText = "£" + labourSubtotal.toFixed(2);
+
+            let profit = (materialSubtotal + labourSubtotal) * (markupPercent / 100);
+            document.getElementById("outProfit").innerText = "£" + profit.toFixed(2);
+            let subtotalWithProfit = materialSubtotal + labourSubtotal + profit;
+            let vatAmount = includeVat ? (subtotalWithProfit * 0.20) : 0;
+            document.getElementById("outVat").innerText = "£" + vatAmount.toFixed(2);
+            let totalQuote = subtotalWithProfit + vatAmount;
+            document.getElementById("outTotal").innerText = "£" + totalQuote.toFixed(2);
+        }
+
+        calculateTiling();
+    </script>
+</body>
+</html>
