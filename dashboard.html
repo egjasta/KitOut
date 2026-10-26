@@ -3,116 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KitOut - On-Site Operational Dashboard</title>
+    <title>KitOut - Dashboard</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="logo.png">
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0c0d0e;
             color: #ffffff;
             margin: 0;
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
         .container {
-            max-width: 480px;
+            max-width: 440px;
             width: 100%;
-            background: #2a2a2a;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border-top: 6px solid #FFC107;
+            display: flex;
+            flex-direction: column;
             box-sizing: border-box;
-            margin-top: 20px;
         }
-        h1 {
-            text-align: center;
-            color: #FFC107;
-            margin: 0 0 5px 0;
-            font-size: 2.2em;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-        .tagline {
-            text-align: center;
-            font-style: italic;
-            color: #aaa;
-            margin-bottom: 30px;
-            font-size: 0.95em;
-            line-height: 1.4;
-        }
-        .trade-card {
-            display: block;
-            background: #333;
-            padding: 18px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 1px solid #444;
-            transition: all 0.2s ease;
-            box-sizing: border-box;
-            color: inherit;
-            text-decoration: none;
-        }
-        .trade-card:hover {
-            border-color: #FFC107;
-            background: #3a3a3a;
-            transform: translateY(-2px);
-        }
-        .trade-title {
-            font-weight: 600;
-            font-size: 1.1em;
+        .brand-header {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 25px;
         }
-        .trade-card:last-of-type {
-            margin-bottom: 0;
+        .brand-logo-box {
+            background: #FFC107;
+            color: #000000;
+            font-weight: 900;
+            font-size: 1.1em;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-name {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #FFC107;
+            letter-spacing: -0.3px;
         }
         .session-row {
-            text-align: center;
-            color: #888;
+            color: #8a8d91;
             font-size: 0.85em;
-            margin-bottom: 18px;
+            margin: -10px 0 20px 4px;
         }
         .session-row a {
             color: #FFC107;
             text-decoration: none;
             font-weight: 600;
         }
-        .session-row a:hover {
-            text-decoration: underline;
+        .session-row a:hover { text-decoration: underline; }
+        h2 {
+            font-size: 2.1em;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
+        }
+        .main-subtitle {
+            font-size: 1em;
+            color: #8a8d91;
+            line-height: 1.4;
+            margin: 0 0 30px 0;
+        }
+        .section-title {
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #8a8d91;
+            text-transform: uppercase;
+            margin-top: 15px;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+        .app-card {
+            background: #1c1e22;
+            border-radius: 14px;
+            padding: 18px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease-in-out;
+            box-sizing: border-box;
+            text-decoration: none;
+            color: inherit;
+        }
+        .app-card:hover {
+            background: #25282e;
+            transform: translateY(-1px);
+        }
+        .card-left-block {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .icon-shield {
+            background: rgba(255, 193, 7, 0.1);
+            color: #FFC107;
+            font-size: 1.2em;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 193, 7, 0.15);
+        }
+        .text-meta-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .card-heading {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0;
+        }
+        .card-subtext {
+            font-size: 0.88em;
+            color: #8a8d91;
+            margin: 0;
+        }
+        .chevron-right {
+            color: #FFC107;
+            font-weight: 700;
+            font-size: 1.1em;
+            opacity: 0.7;
+            padding-right: 4px;
+            transition: transform 0.2s;
+        }
+        .app-card:hover .chevron-right {
+            transform: translateX(2px);
+            opacity: 1;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>KitOut</h1>
-        <div class="tagline">Tell us what you're building, and we'll tell you what you need.</div>
+        <div class="brand-header">
+            <div class="brand-logo-box">🔨</div>
+            <div class="brand-name">KitOut</div>
+        </div>
+
         <div class="session-row">
             Signed in as <span id="sessionEmail"></span> · <a href="#" onclick="logOut(); return false;">Log out</a>
         </div>
 
-        <a class="trade-card" href="painting.html">
-            <div class="trade-title">🎨 Painting & Decorating</div>
+        <h2>What are we working on?</h2>
+        <p class="main-subtitle">Calculate materials, estimate costs and plan your next job.</p>
+
+        <a href="painting.html" class="app-card">
+            <div class="card-left-block">
+                <div class="icon-shield">🎨</div>
+                <div class="text-meta-stack">
+                    <div class="card-heading">Painting &amp; Decorating</div>
+                    <div class="card-subtext">Paint, coverage and labour</div>
+                </div>
+            </div>
+            <div class="chevron-right">❯</div>
         </a>
-        <a class="trade-card" href="tiling.html">
-            <div class="trade-title">🧱 Wall & Floor Tiling</div>
+
+        <a href="tiling.html" class="app-card">
+            <div class="card-left-block">
+                <div class="icon-shield">🧱</div>
+                <div class="text-meta-stack">
+                    <div class="card-heading">Wall &amp; Floor Tiling</div>
+                    <div class="card-subtext">Tiles, adhesive and grout</div>
+                </div>
+            </div>
+            <div class="chevron-right">❯</div>
         </a>
-        <a class="trade-card" href="drywall.html">
-            <div class="trade-title">🪵 Drywall & Stud Walls</div>
+
+        <a href="drywall.html" class="app-card">
+            <div class="card-left-block">
+                <div class="icon-shield">🪵</div>
+                <div class="text-meta-stack">
+                    <div class="card-heading">Drywall &amp; Stud Walls</div>
+                    <div class="card-subtext">Boards, framing and fixings</div>
+                </div>
+            </div>
+            <div class="chevron-right">❯</div>
         </a>
-        <a class="trade-card" href="decking.html">
-            <div class="trade-title">🏡 Garden Decking & Flooring</div>
+
+        <a href="decking.html" class="app-card">
+            <div class="card-left-block">
+                <div class="icon-shield">🏡</div>
+                <div class="text-meta-stack">
+                    <div class="card-heading">Garden Decking &amp; Flooring</div>
+                    <div class="card-subtext">Deck boards, joists and fixings</div>
+                </div>
+            </div>
+            <div class="chevron-right">❯</div>
         </a>
-        <a class="trade-card" href="snaglist.html">
-            <div class="trade-title">📋 On-Site SnagList Tracker</div>
+
+        <div class="section-title">Site Tools</div>
+
+        <a href="snaglist.html" class="app-card">
+            <div class="card-left-block">
+                <div class="icon-shield">📋</div>
+                <div class="text-meta-stack">
+                    <div class="card-heading">On-Site SnagList Tracker</div>
+                    <div class="card-subtext">Record and track outstanding work</div>
+                </div>
+            </div>
+            <div class="chevron-right">❯</div>
         </a>
     </div>
+
     <script>
         const session = localStorage.getItem("kitout_user_session");
         if (!session) {
