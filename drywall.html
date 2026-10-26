@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KitOut - Drywall & Stud Walls</title>
+    <title>KitOut - Advanced Drywall Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -40,9 +43,7 @@
             font-size: 1.8em;
             font-weight: 800;
         }
-        .input-group {
-            margin-bottom: 15px;
-        }
+        .input-group { margin-bottom: 15px; }
         label {
             display: block;
             margin-bottom: 6px;
@@ -60,14 +61,8 @@
             font-size: 1em;
             box-sizing: border-box;
         }
-        input:focus, select:focus {
-            border-color: #FFC107;
-            outline: none;
-        }
-        input[type="range"] {
-            padding: 0;
-            accent-color: #FFC107;
-        }
+        input:focus, select:focus { border-color: #FFC107; outline: none; }
+        input[type="range"] { padding: 0; accent-color: #FFC107; }
         .toggle-group {
             display: flex;
             align-items: center;
@@ -78,16 +73,8 @@
             margin-bottom: 15px;
             border: 1px solid #444;
         }
-        .toggle-label {
-            font-weight: 500;
-            font-size: 0.95em;
-        }
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
+        .toggle-label { font-weight: 500; font-size: 0.95em; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
@@ -106,6 +93,33 @@
             border-radius: 8px;
             margin-bottom: 15px;
             border: 1px dashed #444;
+        }
+        .variation-panel {
+            background: #232323;
+            border: 1px solid #3a3a3a;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        .var-badge {
+            background: #CE1126;
+            color: #fff;
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+        .var-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.9em;
+            border-left: 3px solid #CE1126;
         }
         .invoice-card {
             background: #111;
@@ -130,10 +144,7 @@
             color: #ccc;
             gap: 12px;
         }
-        .invoice-row span:last-child {
-            text-align: right;
-            white-space: nowrap;
-        }
+        .invoice-row span:last-child { text-align: right; white-space: nowrap; }
         .invoice-total {
             display: flex;
             justify-content: space-between;
@@ -144,7 +155,7 @@
             font-size: 1.3em;
             color: #FFC107;
         }
-        .store-btn {
+        .action-btn {
             display: block;
             width: 100%;
             text-align: center;
@@ -154,10 +165,35 @@
             border-radius: 8px;
             font-weight: 700;
             text-decoration: none;
-            margin-top: 20px;
-            transition: background 0.2s;
+            margin-top: 15px;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+            box-sizing: border-box;
         }
-        .store-btn:hover { background: #e0a800; }
+        .action-btn.secondary {
+            background: #333;
+            color: #FFC107;
+            border: 1px solid #FFC107;
+        }
+        .action-btn:hover { opacity: 0.9; }
+        #pdfExportTarget {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 680px;
+            background: #fff;
+            color: #111;
+        }
+        #pdfExportTarget .pdf-sheet {
+            background: #fff;
+            color: #111;
+            padding: 28px;
+            font-family: "Segoe UI", Roboto, sans-serif;
+        }
+        #pdfExportTarget h2 { margin: 0 0 4px 0; color: #111; }
+        #pdfExportTarget table { width: 100%; border-collapse: collapse; }
+        #pdfExportTarget .pdf-grand { font-size: 1.4em; font-weight: 800; margin-top: 16px; }
     </style>
 </head>
 <body>
@@ -166,25 +202,25 @@
         <h1>🪵 Drywall Calculator</h1>
 
         <div class="input-group">
+            <label>Project / Client Reference Name</label>
+            <input type="text" id="clientName" value="Mr. Davis Stud Wall" oninput="calculateDrywall()">
+        </div>
+        <div class="input-group">
             <label>Wall Length (metres)</label>
             <input type="number" id="length" value="4.5" min="0" step="0.1" oninput="calculateDrywall()">
         </div>
-
         <div class="input-group">
             <label>Wall Height (metres)</label>
             <input type="number" id="height" value="2.4" min="0" step="0.1" oninput="calculateDrywall()">
         </div>
-
         <div class="input-group">
             <label>Timber Stud Length (metres)</label>
             <input type="number" id="timberLength" value="2.4" min="0.1" step="0.1" oninput="calculateDrywall()">
         </div>
-
         <div class="input-group">
             <label>Plasterboard Width (metres)</label>
             <input type="number" id="boardWidth" value="1.2" min="0.1" step="0.1" oninput="calculateDrywall()">
         </div>
-
         <div class="input-group">
             <label>Project Finish Grade</label>
             <select id="grade" onchange="calculateDrywall()">
@@ -226,43 +262,58 @@
             </label>
         </div>
 
-        <div class="invoice-card">
-            <div class="invoice-title">🧾 ESTIMATE SUMMARY</div>
-            <div class="invoice-row">
-                <span>Total Stud Timber Lengths:</span>
-                <span id="outTimber">0 Lengths</span>
+        <div class="variation-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-weight:700; font-size:1em; color:#FFC107;">🛠️ Variation Change Orders</span>
+                <span class="var-badge" id="varCountBadge">0 Extra Requests</span>
             </div>
-            <div class="invoice-row">
-                <span>Plasterboards Required:</span>
-                <span id="outBoards">0 Sheets</span>
+            <div class="input-group" style="margin-bottom:8px;">
+                <input type="text" id="varNotes" placeholder="e.g., Acoustic insulation or extra dry-lining tape">
             </div>
-            <div class="invoice-row">
-                <span>Material Subtotal:</span>
-                <span id="outMaterials">£0.00</span>
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="varCost" placeholder="Extra Cost (£)" min="0" step="0.01" style="width:65%;">
+                <button type="button" class="action-btn" style="margin-top:0; width:auto; white-space:nowrap; padding:12px 16px;" onclick="addChangeOrder()">Add</button>
             </div>
-            <div class="invoice-row">
-                <span>Labour Subtotal:</span>
-                <span id="outLabour">£0.00</span>
-            </div>
-            <div class="invoice-row">
-                <span>Gross Margin Profit:</span>
-                <span id="outProfit">£0.00</span>
-            </div>
-            <div class="invoice-row">
-                <span>Calculated VAT:</span>
-                <span id="outVat">£0.00</span>
-            </div>
-            <div class="invoice-total">
-                <span>TOTAL QUOTE:</span>
-                <span id="outTotal">£0.00</span>
-            </div>
+            <div id="variationLogFeed"></div>
         </div>
 
-        <a href="https://wickes.co.uk" target="_blank" class="store-btn">🛒 Order Plasterboard via Wickes</a>
+        <div class="invoice-card" id="screenInvoiceView">
+            <div class="invoice-title">🧾 LIVE ESTIMATE SUMMARY</div>
+            <div class="invoice-row"><span>Total Stud Timber:</span><span id="outTimber">0 Lengths</span></div>
+            <div class="invoice-row"><span>Plasterboards Required:</span><span id="outBoards">0 Sheets</span></div>
+            <div class="invoice-row"><span>Material Base Cost:</span><span id="outMaterials">£0.00</span></div>
+            <div class="invoice-row"><span>Labour Base Cost:</span><span id="outLabour">£0.00</span></div>
+            <div class="invoice-row"><span>Site Variation Logs:</span><span id="outVariations" style="color:#CE1126;">£0.00</span></div>
+            <div class="invoice-row"><span>Gross Admin Markup:</span><span id="outProfit">£0.00</span></div>
+            <div class="invoice-row"><span>Calculated 20% VAT:</span><span id="outVat">£0.00</span></div>
+            <div class="invoice-total"><span>TOTAL CONTRACT PRICE:</span><span id="outTotal">£0.00</span></div>
+        </div>
+
+        <button type="button" class="action-btn" onclick="generatePdfQuote()">📄 Export Professional PDF Quote</button>
+        <a href="https://wickes.co.uk" target="_blank" class="action-btn secondary">🛒 Order Plasterboard via Wickes</a>
+    </div>
+
+    <div id="pdfExportTarget">
+        <div class="pdf-sheet">
+            <h2>KitOut Quote Report</h2>
+            <p>Professional On-Site Structural Estimate</p>
+            <p id="pdfDate">Date: --/--/----</p>
+            <p id="pdfClientRef">Client: ----</p>
+            <h3>1. Project Layout &amp; Dimension Specs</h3>
+            <p>CLS Timber Stud Framework Check: <span id="pdfTimber">0 Lengths</span></p>
+            <p>Plasterboard Face Sheet Requirements: <span id="pdfBoards">0 Sheets</span></p>
+            <p>Specification Finish Grade Material: <span id="pdfGrade">Standard</span></p>
+            <h3>2. Breakdown of Costs &amp; Variations</h3>
+            <table id="pdfCostTable"></table>
+            <p>Thank you for your business. Generated securely via KitOut App.</p>
+            <p>TOTAL ESTIMATED CONTRACT PRICE:</p>
+            <p class="pdf-grand" id="pdfGrandTotal">£0.00</p>
+        </div>
     </div>
 
     <script>
         let customDaysSet = false;
+        let changeOrdersList = [];
 
         function toggleLabourPanel() {
             const panel = document.getElementById("labourPanel");
@@ -280,6 +331,42 @@
         function calculateDrywallCustomDays() {
             customDaysSet = true;
             calculateDrywall();
+        }
+
+        function addChangeOrder() {
+            const notes = document.getElementById("varNotes").value.trim();
+            const cost = parseFloat(document.getElementById("varCost").value) || 0;
+            if (!notes || cost <= 0) {
+                alert("Please input details.");
+                return;
+            }
+            changeOrdersList.push({ description: notes, price: cost });
+            document.getElementById("varNotes").value = "";
+            document.getElementById("varCost").value = "";
+            renderChangeOrders();
+            calculateDrywall();
+        }
+
+        function renderChangeOrders() {
+            const feed = document.getElementById("variationLogFeed");
+            const badge = document.getElementById("varCountBadge");
+            feed.innerHTML = "";
+            badge.innerText = changeOrdersList.length + " Extra Requests";
+            changeOrdersList.forEach(function (item) {
+                const row = document.createElement("div");
+                row.className = "var-row";
+                row.innerHTML = "<span>⚡ " + escapeHtml(item.description) +
+                    '</span> <span style="font-weight:700; color:#CE1126;">+£' + item.price.toFixed(2) + "</span>";
+                feed.appendChild(row);
+            });
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
         }
 
         function calculateDrywall() {
@@ -300,10 +387,9 @@
             let totalBoardArea = (length * height) * 2;
             let rawSheets = totalBoardArea / (bWidth * 2.4);
             let totalBoards = Math.ceil(rawSheets * 1.1) || 0;
-            document.getElementById("outBoards").innerText = totalBoards + " Sheets (2.4m x 1.2m)";
+            document.getElementById("outBoards").innerText = totalBoards + " Sheets";
 
             let screwBoxes = Math.ceil(totalBoards * 25 / 200) || 1;
-
             let boardPrice = (grade === "Premium") ? 26.50 : 13.40;
             let materialSubtotal = (totalTimber * 4.20) + (totalBoards * boardPrice) + (screwBoxes * 8.00);
             document.getElementById("outMaterials").innerText = "£" + materialSubtotal.toFixed(2);
@@ -316,13 +402,61 @@
             let labourSubtotal = includeLabour ? (days * dayRate) : 0;
             document.getElementById("outLabour").innerText = "£" + labourSubtotal.toFixed(2);
 
-            let profit = (materialSubtotal + labourSubtotal) * (markupPercent / 100);
+            let variationsTotalSum = 0;
+            changeOrdersList.forEach(function (item) { variationsTotalSum += item.price; });
+            document.getElementById("outVariations").innerText = "£" + variationsTotalSum.toFixed(2);
+
+            let baselineCost = materialSubtotal + labourSubtotal + variationsTotalSum;
+            let profit = baselineCost * (markupPercent / 100);
             document.getElementById("outProfit").innerText = "£" + profit.toFixed(2);
-            let subtotalWithProfit = materialSubtotal + labourSubtotal + profit;
+            let subtotalWithProfit = baselineCost + profit;
             let vatAmount = includeVat ? (subtotalWithProfit * 0.20) : 0;
             document.getElementById("outVat").innerText = "£" + vatAmount.toFixed(2);
             let totalQuote = subtotalWithProfit + vatAmount;
             document.getElementById("outTotal").innerText = "£" + totalQuote.toFixed(2);
+        }
+
+        function generatePdfQuote() {
+            if (typeof html2pdf === "undefined") {
+                alert("PDF library is still loading. Check your connection and try again.");
+                return;
+            }
+            const client = document.getElementById("clientName").value.trim() || "Valued Client";
+            document.getElementById("pdfDate").innerText = "Date: " + new Date().toLocaleDateString("en-GB");
+            document.getElementById("pdfClientRef").innerText = "Client Ref: " + client;
+            document.getElementById("pdfTimber").innerText = document.getElementById("outTimber").innerText;
+            document.getElementById("pdfBoards").innerText = document.getElementById("outBoards").innerText;
+            document.getElementById("pdfGrade").innerText = document.getElementById("grade").value;
+            document.getElementById("pdfGrandTotal").innerText = document.getElementById("outTotal").innerText;
+
+            let tableHtml =
+                "<tr><th style='padding:10px; text-align:left; border-bottom:1px solid #eee;'>Item Description</th>" +
+                "<th style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>Subtotal</th></tr>" +
+                "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Materials Base Allocation Costs</td>" +
+                "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outMaterials").innerText + "</td></tr>" +
+                "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Labour Allocation Estimate Fees</td>" +
+                "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outLabour").innerText + "</td></tr>";
+            changeOrdersList.forEach(function (item) {
+                tableHtml +=
+                    "<tr><td style='padding:10px; border-bottom:1px solid #eee; color:#CE1126; font-weight:600;'>⚡ Variation: " +
+                    escapeHtml(item.description) +
+                    "</td><td style='padding:10px; text-align:right; border-bottom:1px solid #eee; color:#CE1126; font-weight:600;'>+£" +
+                    item.price.toFixed(2) + "</td></tr>";
+            });
+            tableHtml +=
+                "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Administrative Markup Fee Margin</td>" +
+                "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outProfit").innerText + "</td></tr>" +
+                "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Calculated UK Standard VAT (20%)</td>" +
+                "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outVat").innerText + "</td></tr>";
+            document.getElementById("pdfCostTable").innerHTML = tableHtml;
+
+            html2pdf().set({
+                margin: 10,
+                filename: "KitOut_Quote_" + client.replace(/\s+/g, "_") + ".pdf",
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { scale: 2, logging: false },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+            }).from(document.getElementById("pdfExportTarget")).save();
         }
 
         calculateDrywall();
