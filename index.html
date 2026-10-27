@@ -132,16 +132,6 @@
             font-weight: 600;
             text-decoration: underline;
         }
-        .auth-error {
-            display: none;
-            margin-top: 14px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            background: rgba(206, 17, 38, 0.15);
-            color: #ff8a93;
-            font-size: 0.88em;
-            line-height: 1.4;
-        }
     </style>
 </head>
 <body>
@@ -166,7 +156,6 @@
             </div>
 
             <button type="button" class="action-btn" id="submitBtn" onclick="handleAuth()">🚀 Register Free Account</button>
-            <div class="auth-error" id="authError"></div>
 
             <div class="switch-mode" id="toggleAuthMode" onclick="toggleMode()">
                 Already have an account? <span>Log In Here</span>
@@ -196,20 +185,12 @@
             }
         });
 
-        function showAuthError(message) {
-            const box = document.getElementById("authError");
-            box.style.display = "block";
-            box.innerText = message;
-        }
-
         function toggleMode() {
             isLoginMode = !isLoginMode;
             const heading = document.getElementById("mainHeading");
             const subtitle = document.getElementById("mainSub");
             const submitBtn = document.getElementById("submitBtn");
             const toggleText = document.getElementById("toggleAuthMode");
-            document.getElementById("authError").style.display = "none";
-
             if (isLoginMode) {
                 heading.innerText = "Welcome Back";
                 subtitle.innerText = "Securely log into your operational trade room.";
@@ -227,33 +208,36 @@
             const email = document.getElementById("userEmail").value.trim();
             const pass = document.getElementById("userPassword").value.trim();
             const submitBtn = document.getElementById("submitBtn");
-            document.getElementById("authError").style.display = "none";
 
             if (!email || pass.length < 6) {
-                showAuthError("Please input a valid email address and a password of at least 6 characters.");
-                return;
-            }
-            if (typeof firebase === "undefined" || !auth) {
-                showAuthError("Firebase is still loading. Check your connection and try again.");
+                alert("Please enter a valid email address and a password of at least 6 characters.");
                 return;
             }
 
             submitBtn.disabled = true;
-            const request = isLoginMode
-                ? auth.signInWithEmailAndPassword(email, pass)
-                : auth.createUserWithEmailAndPassword(email, pass);
 
-            request
-                .then(function (userCredential) {
-                    const user = userCredential.user;
-                    localStorage.setItem("kitout_user_session", user.email || email);
-                    window.location.href = "dashboard.html";
-                })
-                .catch(function (error) {
-                    submitBtn.disabled = false;
-                    const prefix = isLoginMode ? "Login Failed: " : "Registration Failed: ";
-                    showAuthError(prefix + error.message);
-                });
+            if (isLoginMode) {
+                auth.signInWithEmailAndPassword(email, pass)
+                    .then(function (userCredential) {
+                        localStorage.setItem("kitout_user_session", userCredential.user.email || email);
+                        window.location.href = "dashboard.html";
+                    })
+                    .catch(function (error) {
+                        submitBtn.disabled = false;
+                        alert("Login Error: " + error.message);
+                    });
+            } else {
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .then(function (userCredential) {
+                        alert("Account Created! Redirecting to your dashboard...");
+                        localStorage.setItem("kitout_user_session", userCredential.user.email || email);
+                        window.location.href = "dashboard.html";
+                    })
+                    .catch(function (error) {
+                        submitBtn.disabled = false;
+                        alert("Registration Error: " + error.message);
+                    });
+            }
         }
     </script>
 </body>
