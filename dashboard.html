@@ -6,6 +6,8 @@
     <title>KitOut - Executive Grid Dashboard</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="logo.png">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -349,16 +351,34 @@
     </div>
 
     <script>
-        const session = localStorage.getItem("kitout_user_session");
-        if (!session) {
-            window.location.href = "index.html";
-        } else {
-            document.getElementById("sessionEmail").innerText = session;
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5X5grTNEwXvHtkMPXiVdNoRO2OEozR_Y",
+            authDomain: "kitout-emails.firebaseapp.com",
+            projectId: "kitout-emails",
+            storageBucket: "kitout-emails.firebasestorage.app",
+            messagingSenderId: "393379398097",
+            appId: "1:393379398097:web:b82dc3d193b8b24824a0f0",
+            measurementId: "G-B4JQ81F5MQ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged(function (user) {
+            if (user && user.email) {
+                localStorage.setItem("kitout_user_session", user.email);
+                document.getElementById("sessionEmail").innerText = user.email;
+            } else {
+                localStorage.removeItem("kitout_user_session");
+                window.location.href = "index.html";
+            }
+        });
 
         function logOut() {
-            localStorage.removeItem("kitout_user_session");
-            window.location.href = "index.html";
+            auth.signOut().finally(function () {
+                localStorage.removeItem("kitout_user_session");
+                window.location.href = "index.html";
+            });
         }
     </script>
 </body>
