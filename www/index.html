@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KitOut - Secure Trade Portal</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0c0d0e;
+            color: #ffffff;
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 440px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .brand-logo-box {
+            background: #FFC107;
+            color: #000000;
+            font-weight: 900;
+            font-size: 1.1em;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-name {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #FFC107;
+            letter-spacing: -0.3px;
+        }
+        h2 {
+            font-size: 2.1em;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
+            text-align: center;
+        }
+        .main-subtitle {
+            font-size: 1em;
+            color: #8a8d91;
+            line-height: 1.4;
+            margin: 0 0 35px 0;
+            text-align: center;
+        }
+        .form-card {
+            background: #1c1e22;
+            border-radius: 16px;
+            padding: 24px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 193, 7, 0.05);
+        }
+        .input-group { margin-bottom: 20px; }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #8a8d91;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            background: #0c0d0e;
+            border: 1px solid #2d3139;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #FFC107;
+            outline: none;
+        }
+        .action-btn {
+            display: block;
+            width: 100%;
+            background: #FFC107;
+            color: #000000;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.05em;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .action-btn:hover { background: #e0a800; }
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+        .switch-mode {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 0.9em;
+            color: #8a8d91;
+            cursor: pointer;
+        }
+        .switch-mode span {
+            color: #FFC107;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="brand-header">
+            <div class="brand-logo-box">🔨</div>
+            <div class="brand-name">KitOut</div>
+        </div>
+
+        <h2 id="mainHeading">Create Account</h2>
+        <p class="main-subtitle" id="mainSub">Get instant access to on-site calculation modules.</p>
+
+        <div class="form-card">
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="userEmail" placeholder="name@company.com" autocomplete="email">
+            </div>
+
+            <div class="input-group">
+                <label>Secure Password</label>
+                <input type="password" id="userPassword" placeholder="••••••••" autocomplete="current-password">
+            </div>
+
+            <button type="button" class="action-btn" id="submitBtn" onclick="handleAuth()">🚀 Register Free Account</button>
+
+            <div class="switch-mode" id="toggleAuthMode" onclick="toggleMode()">
+                Already have an account? <span>Log In Here</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5X5grTNEwXvHtkMPXiVdNoRO2OEozR_Y",
+            authDomain: "kitout-emails.firebaseapp.com",
+            projectId: "kitout-emails",
+            storageBucket: "kitout-emails.firebasestorage.app",
+            messagingSenderId: "393379398097",
+            appId: "1:393379398097:web:b82dc3d193b8b24824a0f0",
+            measurementId: "G-B4JQ81F5MQ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        let isLoginMode = false;
+
+        auth.onAuthStateChanged(function (user) {
+            if (user && user.email) {
+                localStorage.setItem("kitout_user_session", user.email);
+                window.location.href = "dashboard.html";
+            }
+        });
+
+        function toggleMode() {
+            isLoginMode = !isLoginMode;
+            const heading = document.getElementById("mainHeading");
+            const subtitle = document.getElementById("mainSub");
+            const submitBtn = document.getElementById("submitBtn");
+            const toggleText = document.getElementById("toggleAuthMode");
+            if (isLoginMode) {
+                heading.innerText = "Welcome Back";
+                subtitle.innerText = "Securely log into your operational trade room.";
+                submitBtn.innerText = "🔒 Secure Log In";
+                toggleText.innerHTML = "New to KitOut? <span>Create Account</span>";
+            } else {
+                heading.innerText = "Create Account";
+                subtitle.innerText = "Get instant access to on-site calculation modules.";
+                submitBtn.innerText = "🚀 Register Free Account";
+                toggleText.innerHTML = "Already have an account? <span>Log In Here</span>";
+            }
+        }
+
+        function handleAuth() {
+            const email = document.getElementById("userEmail").value.trim();
+            const pass = document.getElementById("userPassword").value.trim();
+            const submitBtn = document.getElementById("submitBtn");
+
+            if (!email || pass.length < 6) {
+                alert("Please enter a valid email address and a password of at least 6 characters.");
+                return;
+            }
+
+            submitBtn.disabled = true;
+
+            if (isLoginMode) {
+                auth.signInWithEmailAndPassword(email, pass)
+                    .then(function (userCredential) {
+                        localStorage.setItem("kitout_user_session", userCredential.user.email || email);
+                        window.location.href = "dashboard.html";
+                    })
+                    .catch(function (error) {
+                        submitBtn.disabled = false;
+                        alert("Login Error: " + error.message);
+                    });
+            } else {
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .then(function (userCredential) {
+                        alert("Account Created! Redirecting to your dashboard...");
+                        localStorage.setItem("kitout_user_session", userCredential.user.email || email);
+                        window.location.href = "dashboard.html";
+                    })
+                    .catch(function (error) {
+                        submitBtn.disabled = false;
+                        alert("Registration Error: " + error.message);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

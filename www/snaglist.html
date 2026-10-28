@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KitOut - Advanced SnagList Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0c0d0e;
+            color: #ffffff;
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 440px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        .app-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            margin-bottom: 25px;
+        }
+        .back-circle {
+            background: #1c1e22;
+            color: #FFC107;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+        .app-bar-title { font-size: 1.25em; font-weight: 700; color: #ffffff; margin: 0; }
+        .section-label { font-size: 0.85em; font-weight: 700; letter-spacing: 1px; color: #8a8d91; text-transform: uppercase; margin-top: 15px; margin-bottom: 12px; padding-left: 4px; }
+        .input-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; width: 100%; }
+        .card-input-box { background: #1c1e22; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; box-sizing: border-box; }
+        .card-input-box.full-width { grid-column: span 2; }
+        label { font-size: 0.78em; font-weight: 700; color: #8a8d91; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        input, textarea { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 1.15em; font-weight: 600; padding: 4px 0 0 0; box-sizing: border-box; }
+        textarea { resize: vertical; height: 60px; font-family: inherit; }
+        input:focus, textarea:focus { outline: none; color: #FFC107; }
+        .camera-upload-btn {
+            background: #25282e;
+            border: 1px dashed #2d3139;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #FFC107;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-top: 8px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        .camera-upload-btn:hover { background: #2d3139; }
+        .thumb-preview-box { width: 100%; max-height: 120px; object-fit: cover; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid #444; }
+        .snag-list { margin-top: 20px; border-top: 1px dashed #2d3139; padding-top: 20px; }
+        .snag-card { background: #1c1e22; padding: 16px; border-radius: 14px; margin-bottom: 12px; border-left: 4px solid #f44336; position: relative; box-sizing: border-box; }
+        .snag-card.resolved { border-left-color: #4caf50; opacity: 0.75; }
+        .snag-meta { font-size: 0.8em; color: #8a8d91; margin-bottom: 4px; }
+        .snag-desc { font-weight: 600; font-size: 1.05em; margin-bottom: 12px; color: #fff; padding-right: 90px; }
+        .snag-img-feed { max-width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; display: block; border: 1px solid #2d3139; }
+        .status-badge { display: inline-block; padding: 4px 8px; font-size: 0.75em; font-weight: 700; border-radius: 50px; background: rgba(244,67,54,0.1); color: #f44336; }
+        .resolved .status-badge { background: rgba(76,175,80,0.1); color: #4caf50; }
+        .resolve-btn { position: absolute; right: 16px; bottom: 16px; background: #0c0d0e; border: 1px solid #2d3139; color: #fff; padding: 6px 12px; font-size: 0.8em; font-weight: 600; border-radius: 8px; cursor: pointer; }
+        .resolve-btn:hover { border-color: #FFC107; color: #FFC107; }
+        .signature-panel { background: #1c1e22; border-radius: 14px; padding: 20px; margin-top: 25px; text-align: center; box-sizing: border-box; }
+        .sig-canvas-wrapper { background: #ffffff; border-radius: 10px; margin: 14px 0; overflow: hidden; height: 130px; }
+        canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+        .clear-sig-btn { background: none; border: none; color: #8a8d91; font-size: 0.85em; text-decoration: underline; cursor: pointer; }
+        .action-button { display: block; width: 100%; background: #FFC107; color: #000000; padding: 16px; border-radius: 14px; font-weight: 700; border: none; font-size: 1.05em; cursor: pointer; margin-top: 15px; text-align: center; text-decoration: none; box-sizing: border-box; }
+        #pdfExportTarget {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 680px;
+            background: #fff;
+            color: #111;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-bar">
+            <a href="dashboard.html" class="back-circle">❮</a>
+            <div class="app-bar-title">SnagList Tracker</div>
+        </div>
+
+        <div class="section-label">Log Defect</div>
+
+        <div class="input-grid">
+            <div class="card-input-box full-width">
+                <label>Client Reference Name</label>
+                <input type="text" id="clientName" value="Smith Extension" oninput="updatePdfMeta()">
+            </div>
+            <div class="card-input-box full-width">
+                <label>Location / Room Location</label>
+                <input type="text" id="roomLocation" placeholder="e.g., Master En-Suite Bathroom">
+            </div>
+            <div class="card-input-box full-width">
+                <label>Defect Description Log</label>
+                <textarea id="snagDesc" placeholder="e.g., Hairline crack emerging down internal partition seam..."></textarea>
+            </div>
+            <div class="card-input-box full-width" style="background: transparent; padding: 0;">
+                <label class="camera-upload-btn">
+                    📸 Capture Defect Photo Proof
+                    <input type="file" id="snagCam" accept="image/*" capture="environment" style="display:none;" onchange="processSnagPhoto(this)">
+                </label>
+                <img id="formCamPreview" class="thumb-preview-box" alt="Form Cache Snapshot">
+            </div>
+        </div>
+
+        <button type="button" class="action-button" onclick="addSnagItem()">➕ Log New Snag Item</button>
+
+        <div class="section-label">Active Work Timeline Feed</div>
+        <div class="snag-list" id="snagFeed"></div>
+
+        <div class="signature-panel">
+            <span style="font-weight:700; font-size:1em; color:#FFC107; display:block;">✍️ Handover Sign-Off Approval</span>
+            <p style="font-size:0.85em; color:#8a8d91; margin:4px 0 12px 0;">Homeowner signatures authorize immediate project completion closeout.</p>
+            <div class="sig-canvas-wrapper"><canvas id="signature-pad"></canvas></div>
+            <button type="button" class="clear-sig-btn" onclick="clearSignature()">Reset Signature Pad</button>
+        </div>
+
+        <button type="button" class="action-button" onclick="generateHandoverPdf()">📄 Export Completion Handover PDF</button>
+    </div>
+
+    <div id="pdfExportTarget">
+        <div style="padding:40px; font-family:Arial, sans-serif; color:#111; background:#fff; min-height:1000px;">
+            <div style="display:flex; justify-content:space-between; border-bottom:3px solid #FFC107; padding-bottom:15px; margin-bottom:30px;">
+                <div>
+                    <h1 style="color:#111; margin:0; font-size:26px; font-weight:800; letter-spacing:-1px;">Project Handover &amp; Snag Report</h1>
+                    <p style="margin:4px 0 0 0; color:#555; font-size:12px; font-style:italic;">Official Completion Close-Out Document</p>
+                </div>
+                <div style="text-align:right;">
+                    <p style="margin:0; font-weight:700; font-size:14px;" id="pdfDate">Date: --/--/----</p>
+                    <p style="margin:3px 0 0 0; font-size:13px; color:#333;" id="pdfClientRef">Project: ----</p>
+                </div>
+            </div>
+
+            <h3 style="border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom:20px; font-size:15px; color:#444; text-transform:uppercase; letter-spacing:0.5px;">1. Quality Control Field Audit Logs</h3>
+            <div id="pdfSnagListContainer" style="margin-bottom:40px;"></div>
+
+            <h3 style="border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom:15px; font-size:15px; color:#444; text-transform:uppercase; letter-spacing:0.5px;">2. Legal Completion Closeout Agreement</h3>
+            <p style="font-size:13px; color:#444; line-height:1.5; margin-bottom:30px;">
+                By signing below, the client confirms that a comprehensive physical walkthrough has been completed, all listed visual features have been verified, and all outstanding building works are formally accepted as finished to an aggregate trade standard.
+            </p>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:5px;">
+                <div>
+                    <span style="font-size:12px; color:#777; display:block; margin-bottom:4px;">Secure Authorization Token:</span>
+                    <span style="font-size:11px; font-family:monospace; color:#aaa;" id="pdfAuthToken">KITOUT-SECURE-ID</span>
+                </div>
+                <div style="text-align:right; border-top:1px solid #222; width:200px; padding-top:10px;">
+                    <img id="pdfSignatureImage" style="max-width:100%; max-height:60px; display:none; margin:0 auto;" alt="Client Handover Signature">
+                    <p style="margin:6px 0 0 0; font-size:12px; color:#333;">Client Handover Signature</p>
+                </div>
+            </div>
+            <p style="margin-top:40px; font-size:11px; color:#888;">Generated securely via KitOut App.</p>
+        </div>
+    </div>
+
+    <script>
+        let snagItemsArray = [];
+        let currentFormPhotoBase64 = "";
+        let signaturePad;
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function updatePdfMeta() {
+            const client = document.getElementById("clientName").value.trim() || "Project Handover";
+            document.getElementById("pdfClientRef").innerText = "Project: " + client;
+        }
+
+        function resizeCanvas() {
+            const canvas = document.getElementById("signature-pad");
+            if (!canvas) return;
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const data = signaturePad && !signaturePad.isEmpty() ? signaturePad.toData() : null;
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+            if (signaturePad) {
+                signaturePad.clear();
+                if (data) signaturePad.fromData(data);
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", function () {
+            const canvas = document.getElementById("signature-pad");
+            window.onresize = resizeCanvas;
+            setTimeout(resizeCanvas, 200);
+            if (typeof SignaturePad !== "undefined") {
+                signaturePad = new SignaturePad(canvas, {
+                    backgroundColor: "rgb(255,255,255)",
+                    penColor: "rgb(17, 17, 17)",
+                    minWidth: 1.5,
+                    maxWidth: 4
+                });
+            }
+            snagItemsArray.push({
+                id: "snag-initial",
+                project: "Smith Extension",
+                room: "Master Bedroom Seam",
+                desc: "Touch up minor paint flashing near door architrave.",
+                photo: "",
+                status: "🔴 OPEN"
+            });
+            renderSnagCards();
+            updatePdfMeta();
+        });
+
+        function clearSignature() {
+            if (signaturePad) signaturePad.clear();
+        }
+
+        function processSnagPhoto(input) {
+            const preview = document.getElementById("formCamPreview");
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                    currentFormPhotoBase64 = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addSnagItem() {
+            const client = document.getElementById("clientName").value.trim();
+            const location = document.getElementById("roomLocation").value.trim();
+            const desc = document.getElementById("snagDesc").value.trim();
+            if (!client || !location || !desc) {
+                alert("Please complete the required text field variables.");
+                return;
+            }
+            const uniqueId = "snag-" + Date.now();
+            snagItemsArray.unshift({
+                id: uniqueId,
+                project: client,
+                room: location,
+                desc: desc,
+                photo: currentFormPhotoBase64,
+                status: "🔴 OPEN"
+            });
+            document.getElementById("roomLocation").value = "";
+            document.getElementById("snagDesc").value = "";
+            document.getElementById("formCamPreview").style.display = "none";
+            document.getElementById("formCamPreview").src = "";
+            document.getElementById("snagCam").value = "";
+            currentFormPhotoBase64 = "";
+            renderSnagCards();
+        }
+
+        function resolveSnag(id) {
+            const index = snagItemsArray.findIndex(function (item) { return item.id === id; });
+            if (index !== -1) {
+                snagItemsArray[index].status = "🟢 FIXED";
+                renderSnagCards();
+            }
+        }
+
+        function renderSnagCards() {
+            const feed = document.getElementById("snagFeed");
+            feed.innerHTML = "";
+            snagItemsArray.forEach(function (item) {
+                const isFixed = item.status === "🟢 FIXED";
+                const card = document.createElement("div");
+                card.className = "snag-card" + (isFixed ? " resolved" : "");
+                card.id = item.id;
+                const photoHtml = item.photo
+                    ? '<img class="snag-img-feed" src="' + item.photo + '" alt="Visual feature">'
+                    : "";
+                const fixBtn = isFixed
+                    ? ""
+                    : '<button type="button" class="resolve-btn" onclick="resolveSnag(\'' + item.id + "')\">Mark Fixed</button>";
+                card.innerHTML =
+                    '<div class="snag-meta">Location: ' + escapeHtml(item.room) + "</div>" +
+                    '<div class="snag-desc">' + escapeHtml(item.desc) + "</div>" +
+                    photoHtml +
+                    '<div class="status-badge">' + item.status + "</div>" +
+                    fixBtn;
+                feed.appendChild(card);
+            });
+        }
+
+        function generateHandoverPdf() {
+            if (typeof html2pdf === "undefined") {
+                alert("PDF library is still loading. Check your connection and try again.");
+                return;
+            }
+            if (!signaturePad || signaturePad.isEmpty()) {
+                alert("Please capture the homeowner's digital sign-off signature before generating reports.");
+                return;
+            }
+            const client = document.getElementById("clientName").value.trim() || "Project Handover";
+            document.getElementById("pdfDate").innerText = "Date: " + new Date().toLocaleDateString("en-GB");
+            document.getElementById("pdfClientRef").innerText = "Project: " + client;
+            document.getElementById("pdfAuthToken").innerText = "KITOUT-AUDIT-" + Math.floor(100000 + Math.random() * 900000);
+
+            const container = document.getElementById("pdfSnagListContainer");
+            container.innerHTML = "";
+            snagItemsArray.forEach(function (item) {
+                const isFixed = item.status === "🟢 FIXED";
+                const block = document.createElement("div");
+                block.style.padding = "15px";
+                block.style.background = "#f9f9f9";
+                block.style.borderRadius = "8px";
+                block.style.marginBottom = "12px";
+                block.style.borderLeft = "4px solid " + (isFixed ? "#4caf50" : "#f44336");
+                block.style.fontSize = "13px";
+                const imgHtml = item.photo
+                    ? '<img src="' + item.photo + '" style="max-width:100%; max-height:140px; object-fit:cover; border-radius:6px; display:block; margin:8px 0; border:1px solid #ddd;" alt="Visual feature">'
+                    : "";
+                block.innerHTML =
+                    '<div style="color:#666; font-size:11px; margin-bottom:4px;"><strong>Location Field Area:</strong> ' +
+                    escapeHtml(item.room) + "</div>" +
+                    '<div style="font-weight:600; font-size:13px; margin-bottom:5px; color:#111;">' +
+                    escapeHtml(item.desc) + "</div>" + imgHtml +
+                    '<span style="font-size:10px; font-weight:bold; color:#fff; background:' +
+                    (isFixed ? "#4caf50" : "#f44336") +
+                    '; padding:2px 8px; border-radius:3px;">' + item.status + "</span>";
+                container.appendChild(block);
+            });
+
+            const sigImage = document.getElementById("pdfSignatureImage");
+            sigImage.src = signaturePad.toDataURL();
+            sigImage.style.display = "block";
+
+            html2pdf().set({
+                margin: 10,
+                filename: "KitOut_Handover_" + client.replace(/\s+/g, "_") + ".pdf",
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { scale: 2, logging: false },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+            }).from(document.getElementById("pdfExportTarget")).save();
+        }
+    </script>
+</body>
+</html>

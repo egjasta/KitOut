@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KitOut - Drywall Room</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0c0d0e; color: #ffffff; margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
+        .container { max-width: 440px; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
+        .app-bar { display: flex; align-items: center; gap: 12px; margin-top: 10px; margin-bottom: 25px; }
+        .back-circle { background: #1c1e22; color: #FFC107; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700; font-size: 0.9em; }
+        .app-bar-title { font-size: 1.25em; font-weight: 700; color: #ffffff; margin: 0; }
+        .section-label { font-size: 0.85em; font-weight: 700; letter-spacing: 1px; color: #8a8d91; text-transform: uppercase; margin-top: 15px; margin-bottom: 12px; padding-left: 4px; }
+        .input-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; width: 100%; }
+        .card-input-box { background: #1c1e22; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; box-sizing: border-box; }
+        .card-input-box.full-width { grid-column: span 2; }
+        label { font-size: 0.78em; font-weight: 700; color: #8a8d91; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        input, select { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 1.15em; font-weight: 600; padding: 4px 0 0 0; box-sizing: border-box; }
+        input:focus, select:focus { outline: none; color: #FFC107; }
+        input[type="range"] { padding: 10px 0 0 0; accent-color: #FFC107; }
+        select option { background: #1c1e22; color: #fff; }
+        .camera-upload-btn { background: #25282e; border: 1px dashed #2d3139; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; color: #FFC107; font-weight: 600; font-size: 0.9em; cursor: pointer; margin-top: 8px; text-transform: none; letter-spacing: 0; }
+        .camera-upload-btn:hover { background: #2d3139; }
+        .preview-thumbnail { width: 100%; height: auto; max-height: 140px; object-fit: cover; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid #444; }
+        .shelf-toggle { background: #1c1e22; border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; box-sizing: border-box; }
+        .toggle-text-stack { display: flex; flex-direction: column; gap: 2px; }
+        .toggle-title { font-size: 1.05em; font-weight: 600; color: #ffffff; }
+        .toggle-desc { font-size: 0.82em; color: #8a8d91; }
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .2s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+        input:checked + .slider { background-color: #FFC107; }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .hidden-panel { display: none; background: #141619; border-radius: 14px; padding: 12px; margin-bottom: 12px; border: 1px dashed #2d3139; }
+        .variation-card { background: #1c1e22; border-radius: 14px; padding: 16px; margin-bottom: 12px; box-sizing: border-box; }
+        .var-row { display: flex; justify-content: space-between; background: #0c0d0e; padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 0.9em; border-left: 3px solid #CE1126; }
+        .receipt-card { background: #1c1e22; border-radius: 16px; padding: 20px; margin-top: 15px; margin-bottom: 20px; box-sizing: border-box; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95em; color: #8a8d91; gap: 12px; }
+        .receipt-total { display: flex; justify-content: space-between; margin-top: 15px; border-top: 1px dashed #2d3139; padding-top: 14px; font-weight: 800; font-size: 1.4em; color: #FFC107; }
+        .action-button { display: block; width: 100%; background: #FFC107; color: #000000; padding: 16px; border-radius: 14px; font-weight: 700; font-size: 1.05em; border: none; cursor: pointer; margin-bottom: 12px; text-align: center; text-decoration: none; box-sizing: border-box; }
+        .action-button.secondary { background: #1c1e22; color: #FFC107; border: 1px solid rgba(255, 193, 7, 0.2); }
+        #pdfExportTarget { position: absolute; left: -9999px; top: 0; width: 680px; background: #fff; color: #111; }
+        #pdfExportTarget .pdf-sheet { background: #fff; color: #111; padding: 28px; font-family: "Segoe UI", Roboto, sans-serif; }
+        #pdfExportTarget h2 { margin: 0 0 4px 0; color: #111; }
+        #pdfExportTarget table { width: 100%; border-collapse: collapse; }
+        #pdfExportTarget .pdf-grand { font-size: 1.4em; font-weight: 800; margin-top: 16px; }
+        #pdfPhotoEmbed { max-width: 220px; max-height: 140px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-bar">
+            <a href="dashboard.html" class="back-circle">❮</a>
+            <div class="app-bar-title">Drywall &amp; Stud Walls</div>
+        </div>
+        <div class="section-label">Job Parameters</div>
+        <div class="input-grid">
+            <div class="card-input-box full-width">
+                <label>Project Reference Name</label>
+                <input type="text" id="clientName" value="Mr. Davis Stud Wall" oninput="calculateDrywall()">
+            </div>
+            <div class="card-input-box">
+                <label>Wall Length (m)</label>
+                <input type="number" id="length" value="4.5" min="0" step="0.1" oninput="calculateDrywall()">
+            </div>
+            <div class="card-input-box">
+                <label>Wall Height (m)</label>
+                <input type="number" id="height" value="2.4" min="0" step="0.1" oninput="calculateDrywall()">
+            </div>
+            <div class="card-input-box">
+                <label>Timber Length (m)</label>
+                <input type="number" id="timberLength" value="2.4" min="0.1" step="0.1" oninput="calculateDrywall()">
+            </div>
+            <div class="card-input-box">
+                <label>Board Width (m)</label>
+                <input type="number" id="boardWidth" value="1.2" min="0.1" step="0.1" oninput="calculateDrywall()">
+            </div>
+            <div class="card-input-box full-width">
+                <label>Project Finish Grade</label>
+                <select id="grade" onchange="calculateDrywall()">
+                    <option value="Standard">Standard 12.5mm Wallboard Finish</option>
+                    <option value="Premium">Premium Green Moisture Panel Finish 💎</option>
+                </select>
+            </div>
+            <div class="card-input-box full-width">
+                <label>Site Frame Framing Proof</label>
+                <label class="camera-upload-btn">
+                    📸 Capture Drywall Framing Proof
+                    <input type="file" id="drywallCam" accept="image/*" capture="environment" style="display:none;" onchange="previewImage(this)">
+                </label>
+                <img id="camPreview" class="preview-thumbnail" alt="Drywall Image Preview">
+            </div>
+        </div>
+
+        <div class="shelf-toggle">
+            <div class="toggle-text-stack">
+                <div class="toggle-title">Include Labour Costs</div>
+                <div class="toggle-desc">Activate on-site trade day-rates tracking</div>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="includeLabour" onchange="toggleLabourPanel()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div id="labourPanel" class="hidden-panel">
+            <div class="input-grid" style="margin-bottom: 0;">
+                <div class="card-input-box">
+                    <label>Day Rate (£)</label>
+                    <input type="number" id="dayRate" value="220" min="0" step="1" oninput="calculateDrywall()">
+                </div>
+                <div class="card-input-box">
+                    <label>Days Needed</label>
+                    <input type="number" id="daysNeeded" value="1" min="0" step="0.5" oninput="calculateDrywallCustomDays()">
+                </div>
+            </div>
+        </div>
+
+        <div class="card-input-box full-width" style="margin-bottom:12px;">
+            <label id="markupLabel">Builder Profit Markup (15%)</label>
+            <input type="range" id="markup" min="0" max="50" value="15" oninput="updateMarkupLabel()">
+        </div>
+
+        <div class="shelf-toggle">
+            <div class="toggle-text-stack">
+                <div class="toggle-title">Apply UK VAT (20%)</div>
+                <div class="toggle-desc">Appends standard tax codes to totals</div>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="includeVat" checked onchange="calculateDrywall()">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="variation-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <label style="margin-bottom: 0;">🛠️ Change Order Variations</label>
+                <span id="varCountBadge" style="font-size:0.75em; font-weight:700; color:#FFC107; background:rgba(255,193,7,0.1); padding:4px 8px; border-radius:6px;">0 Logs</span>
+            </div>
+            <div class="input-grid" style="margin-bottom: 0;">
+                <div class="card-input-box" style="grid-column: span 2; margin-bottom: 8px; background: #0c0d0e;">
+                    <label>Variation Description</label>
+                    <input type="text" id="varNotes" placeholder="e.g., Soundproofing dense acoustic mineral wool slabs">
+                </div>
+                <div class="card-input-box" style="background: #0c0d0e;">
+                    <label>Extra Cost (£)</label>
+                    <input type="number" id="varCost" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <button type="button" class="action-button" style="margin-bottom:0; padding:12px; border-radius:10px; font-size:0.95em;" onclick="addChangeOrder()">➕ Add Log</button>
+            </div>
+            <div id="variationLogFeed"></div>
+        </div>
+
+        <div class="section-label">Summary Report</div>
+        <div class="receipt-card">
+            <div class="receipt-row"><span>Total Stud Timber:</span><span id="outTimber" style="color: #fff; font-weight: 600;">0 Lengths</span></div>
+            <div class="receipt-row"><span>Plasterboard Sheets:</span><span id="outBoards" style="color: #fff; font-weight: 600;">0 Sheets</span></div>
+            <div class="receipt-row"><span>Material Base Costs:</span><span id="outMaterials" style="color: #fff; font-weight: 600;">£0.00</span></div>
+            <div class="receipt-row"><span>Labour Allocation Fees:</span><span id="outLabour" style="color: #fff; font-weight: 600;">£0.00</span></div>
+            <div class="receipt-row"><span>Variation Adjustments:</span><span id="outVariations" style="color:#CE1126; font-weight: 600;">£0.00</span></div>
+            <div class="receipt-row"><span>Gross Admin Markup Margin:</span><span id="outProfit" style="color: #fff; font-weight: 600;">£0.00</span></div>
+            <div class="receipt-row"><span>Standard UK VAT (20%):</span><span id="outVat" style="color: #fff; font-weight: 600;">£0.00</span></div>
+            <div class="receipt-total"><span>TOTAL CLIENT QUOTE:</span><span id="outTotal">£0.00</span></div>
+        </div>
+
+        <button type="button" class="action-button" onclick="generatePdfQuote()">📄 Export Professional PDF Quote</button>
+        <a href="https://wickes.co.uk" target="_blank" rel="noopener noreferrer" class="action-button secondary">🛒 Order Plasterboard via Wickes</a>
+    </div>
+
+    <div id="pdfExportTarget">
+        <div class="pdf-sheet">
+            <h2>KitOut Quote Report</h2>
+            <p>Professional On-Site Structural Estimate</p>
+            <p id="pdfDate">Date: --/--/----</p>
+            <p id="pdfClientRef">Client: ----</p>
+            <h3>1. Project Layout &amp; Dimension Specs</h3>
+            <p>CLS Timber Stud Framework Check: <span id="pdfTimber">0 Lengths</span></p>
+            <p>Plasterboard Face Sheet Requirements: <span id="pdfBoards">0 Sheets</span></p>
+            <p>Specification Finish Grade Material: <span id="pdfGrade">Standard</span></p>
+            <div id="pdfPhotoSection" style="display:none;">
+                <p>Framing System Visual Record:</p>
+                <img id="pdfPhotoEmbed" alt="Framing system visual record">
+            </div>
+            <h3>2. Breakdown of Costs &amp; Variations</h3>
+            <table id="pdfCostTable"></table>
+            <p>Thank you for your business. Generated securely via KitOut App.</p>
+            <p>TOTAL ESTIMATED CONTRACT PRICE:</p>
+            <p class="pdf-grand" id="pdfGrandTotal">£0.00</p>
+        </div>
+    </div>
+
+    <script>
+        let customDaysSet = false;
+        let changeOrdersList = [];
+        let base64PhotoData = "";
+
+        function previewImage(input) {
+            const preview = document.getElementById("camPreview");
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                    base64PhotoData = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function toggleLabourPanel() {
+            const panel = document.getElementById("labourPanel");
+            const checkbox = document.getElementById("includeLabour");
+            panel.style.display = checkbox.checked ? "block" : "none";
+            calculateDrywall();
+        }
+
+        function updateMarkupLabel() {
+            const markup = document.getElementById("markup").value;
+            document.getElementById("markupLabel").innerText = "Builder Profit Markup (" + markup + "%)";
+            calculateDrywall();
+        }
+
+        function calculateDrywallCustomDays() {
+            customDaysSet = true;
+            calculateDrywall();
+        }
+
+        function addChangeOrder() {
+            const notes = document.getElementById("varNotes").value.trim();
+            const cost = parseFloat(document.getElementById("varCost").value) || 0;
+            if (!notes || cost <= 0) {
+                alert("Please input validation.");
+                return;
+            }
+            changeOrdersList.push({ description: notes, price: cost });
+            document.getElementById("varNotes").value = "";
+            document.getElementById("varCost").value = "";
+            renderChangeOrders();
+            calculateDrywall();
+        }
+
+        function removeChangeOrder(index) {
+            changeOrdersList.splice(index, 1);
+            renderChangeOrders();
+            calculateDrywall();
+        }
+
+        function renderChangeOrders() {
+            const feed = document.getElementById("variationLogFeed");
+            const badge = document.getElementById("varCountBadge");
+            feed.innerHTML = "";
+            badge.innerText = changeOrdersList.length + " Logs";
+            changeOrdersList.forEach(function (item, index) {
+                const row = document.createElement("div");
+                row.className = "var-row";
+                row.innerHTML = "<span>⚡ " + escapeHtml(item.description) +
+                    '</span><span style="font-weight:700; color:#CE1126; cursor:pointer;" onclick="removeChangeOrder(' +
+                    index + ')">+£' + item.price.toFixed(2) + " ✕</span>";
+                feed.appendChild(row);
+            });
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function calculateDrywall() {
+            const length = parseFloat(document.getElementById("length").value) || 0;
+            const height = parseFloat(document.getElementById("height").value) || 0;
+            const tLength = parseFloat(document.getElementById("timberLength").value) || 2.4;
+            const bWidth = parseFloat(document.getElementById("boardWidth").value) || 1.2;
+            const grade = document.getElementById("grade").value;
+            const includeLabour = document.getElementById("includeLabour").checked;
+            const dayRate = parseFloat(document.getElementById("dayRate").value) || 0;
+            const markupPercent = parseFloat(document.getElementById("markup").value) || 0;
+            const includeVat = document.getElementById("includeVat").checked;
+
+            let frameworkLengths = (((length * 2) / tLength) + ((length / 0.6) + 1)) * 1.3;
+            let totalTimber = Math.ceil(frameworkLengths) || 0;
+            document.getElementById("outTimber").innerText = totalTimber + " Lengths (2.4m CLS)";
+
+            let totalBoardArea = (length * height) * 2;
+            let rawSheets = totalBoardArea / (bWidth * 2.4);
+            let totalBoards = Math.ceil(rawSheets * 1.1) || 0;
+            document.getElementById("outBoards").innerText = totalBoards + " Sheets";
+
+            let screwBoxes = Math.ceil(totalBoards * 25 / 200) || 1;
+            let boardPrice = (grade === "Premium") ? 26.50 : 13.40;
+            let materialSubtotal = (totalTimber * 4.20) + (totalBoards * boardPrice) + (screwBoxes * 8.00);
+            document.getElementById("outMaterials").innerText = "£" + materialSubtotal.toFixed(2);
+
+            if (!customDaysSet && totalBoardArea > 0) {
+                let autoDays = Math.ceil(totalBoardArea / 10 * 2) / 2;
+                document.getElementById("daysNeeded").value = autoDays;
+            }
+            const days = parseFloat(document.getElementById("daysNeeded").value) || 0;
+            let labourSubtotal = includeLabour ? (days * dayRate) : 0;
+            document.getElementById("outLabour").innerText = "£" + labourSubtotal.toFixed(2);
+
+            let variationsTotalSum = 0;
+            changeOrdersList.forEach(function (item) { variationsTotalSum += item.price; });
+            document.getElementById("outVariations").innerText = "£" + variationsTotalSum.toFixed(2);
+
+            let baselineCost = materialSubtotal + labourSubtotal + variationsTotalSum;
+            let profit = baselineCost * (markupPercent / 100);
+            document.getElementById("outProfit").innerText = "£" + profit.toFixed(2);
+            let subtotalWithProfit = baselineCost + profit;
+            let vatAmount = includeVat ? (subtotalWithProfit * 0.20) : 0;
+            document.getElementById("outVat").innerText = "£" + vatAmount.toFixed(2);
+            let totalQuote = subtotalWithProfit + vatAmount;
+            document.getElementById("outTotal").innerText = "£" + totalQuote.toFixed(2);
+        }
+
+        function generatePdfQuote() {
+            if (typeof html2pdf === "undefined") {
+                alert("PDF library is still loading. Check your connection and try again.");
+                return;
+            }
+            const client = document.getElementById("clientName").value.trim() || "Valued Client";
+            document.getElementById("pdfDate").innerText = "Date: " + new Date().toLocaleDateString("en-GB");
+            document.getElementById("pdfClientRef").innerText = "Client Ref: " + client;
+            document.getElementById("pdfTimber").innerText = document.getElementById("outTimber").innerText;
+            document.getElementById("pdfBoards").innerText = document.getElementById("outBoards").innerText;
+            document.getElementById("pdfGrade").innerText = document.getElementById("grade").value;
+            document.getElementById("pdfGrandTotal").innerText = document.getElementById("outTotal").innerText;
+
+            const pdfPhotoSec = document.getElementById("pdfPhotoSection");
+            const pdfPhotoEmbed = document.getElementById("pdfPhotoEmbed");
+            if (base64PhotoData !== "") {
+                pdfPhotoEmbed.src = base64PhotoData;
+                pdfPhotoSec.style.display = "block";
+            } else {
+                pdfPhotoSec.style.display = "none";
+            }
+
+            let tableHtml =
+                '<tr style="background:#f5f5f5; border-bottom:1px solid #ddd;"><th style="padding:10px; text-align:left;">Item Description</th><th style="padding:10px; text-align:right;">Subtotal</th></tr>' +
+                "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Materials Base Allocation Costs</td>" +
+                "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outMaterials").innerText + "</td></tr>" +
+                "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Labour Allocation Estimate Fees</td>" +
+                "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outLabour").innerText + "</td></tr>";
+            changeOrdersList.forEach(function (item) {
+                tableHtml +=
+                    "<tr><td style='padding:10px; border-bottom:1px solid #eee; color:#CE1126; font-weight:600;'>⚡ Variation: " +
+                    escapeHtml(item.description) +
+                    "</td><td style='padding:10px; text-align:right; border-bottom:1px solid #eee; color:#CE1126; font-weight:600;'>+£" +
+                    item.price.toFixed(2) + "</td></tr>";
+            });
+            tableHtml +=
+                "<tr><td style='padding:10px; border-bottom:1px solid #eee; font-style:italic;'>Administrative Markup Fee Margin</td>" +
+                "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee; font-style:italic;'>" + document.getElementById("outProfit").innerText + "</td></tr>" +
+                "<tr><td style='padding:10px; font-weight:700;'>Calculated UK Standard VAT (20%)</td>" +
+                "<td style='padding:10px; text-align:right; font-weight:700;'>" + document.getElementById("outVat").innerText + "</td></tr>";
+            document.getElementById("pdfCostTable").innerHTML = tableHtml;
+
+            html2pdf().set({
+                margin: 10,
+                filename: "KitOut_Drywall_" + client.replace(/\s+/g, "_") + ".pdf",
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { scale: 2, logging: false },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+            }).from(document.getElementById("pdfExportTarget")).save();
+        }
+
+        calculateDrywall();
+    </script>
+</body>
+</html>

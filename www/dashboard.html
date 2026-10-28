@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KitOut - Executive Grid Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0c0d0e;
+            color: #ffffff;
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 440px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        .app-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            margin-bottom: 12px;
+        }
+        .app-bar-logo {
+            background: #FFC107;
+            color: #000000;
+            font-size: 1.1em;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .app-bar-meta {
+            display: flex;
+            flex-direction: column;
+        }
+        .app-bar-title {
+            font-size: 1.25em;
+            font-weight: 700;
+            color: #FFC107;
+            margin: 0;
+            line-height: 1.1;
+        }
+        .app-bar-tagline {
+            font-size: 0.68em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #8a8d91;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .session-row {
+            color: #8a8d91;
+            font-size: 0.85em;
+            margin: 0 0 24px 0;
+        }
+        .session-row a {
+            color: #FFC107;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .session-row a:hover { text-decoration: underline; }
+        h2 {
+            font-size: 2.1em;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+        .subtitle-prompt {
+            font-size: 1.05em;
+            color: #8a8d91;
+            margin: 0 0 25px 0;
+            line-height: 1.4;
+        }
+        .subheading-label {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 15px;
+            margin-bottom: 16px;
+        }
+        .hero-action-card {
+            background: #1c1e22;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            box-sizing: border-box;
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 193, 7, 0.05);
+            transition: all 0.2s ease-in-out;
+        }
+        .hero-action-card:hover {
+            background: #25282e;
+            transform: translateY(-1px);
+        }
+        .hero-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .hero-icon-box {
+            background: #FFC107;
+            color: #000000;
+            font-size: 1.3em;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .hero-text-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .hero-title {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .hero-desc {
+            font-size: 0.88em;
+            color: #8a8d91;
+            line-height: 1.3;
+        }
+        .hero-arrow {
+            color: #FFC107;
+            font-size: 1.2em;
+            font-weight: bold;
+            opacity: 0.8;
+            padding-right: 4px;
+        }
+        .trade-grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .grid-card {
+            background: #1c1e22;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 165px;
+            box-sizing: border-box;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        .grid-card:hover {
+            background: #25282e;
+            transform: translateY(-2px);
+        }
+        .grid-top-icon {
+            color: #FFC107;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .grid-meta-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .grid-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+        .grid-desc {
+            font-size: 0.82em;
+            color: #8a8d91;
+            line-height: 1.3;
+            margin-top: 2px;
+        }
+        .grid-footer-arrow {
+            text-align: right;
+            color: #FFC107;
+            font-size: 0.85em;
+            margin-top: 10px;
+            opacity: 0.6;
+            transition: transform 0.2s;
+        }
+        .grid-card:hover .grid-footer-arrow {
+            transform: translateX(3px);
+            opacity: 1;
+        }
+        .full-width-shelf {
+            background: #1c1e22;
+            border-radius: 16px;
+            padding: 18px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            box-sizing: border-box;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        .full-width-shelf:hover {
+            background: #25282e;
+        }
+        .shelf-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .shelf-icon-box {
+            color: #FFC107;
+            font-size: 1.2em;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .shelf-text-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .shelf-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .shelf-desc {
+            font-size: 0.85em;
+            color: #8a8d91;
+        }
+        .shelf-arrow {
+            color: #FFC107;
+            font-size: 0.9em;
+            opacity: 0.7;
+            padding-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-bar">
+            <div class="app-bar-logo">🏗️</div>
+            <div class="app-bar-meta">
+                <div class="app-bar-title">KitOut</div>
+                <div class="app-bar-tagline">Your Job Planning Tool</div>
+            </div>
+        </div>
+
+        <div class="session-row">
+            Signed in as <span id="sessionEmail"></span> · <a href="#" onclick="logOut(); return false;">Log out</a>
+        </div>
+
+        <h2>Let's get to work.</h2>
+        <p class="subtitle-prompt">What are you working on today?</p>
+
+        <a href="painting.html" class="hero-action-card">
+            <div class="hero-left">
+                <div class="hero-icon-box">🧮</div>
+                <div class="hero-text-stack">
+                    <div class="hero-title">Estimate a new job</div>
+                    <div class="hero-desc">Calculate materials, labour and costs.</div>
+                </div>
+            </div>
+            <div class="hero-arrow">↗</div>
+        </a>
+
+        <!-- LIVE PRODUCTION SUBSCRIPTION REVENUE GATEWAY -->
+        <a href="https://buy.stripe.com/8x2cMY6WCfLyfl15sd5Ne00" target="_blank" rel="noopener noreferrer" class="hero-action-card" style="border: 2px solid #FFC107; background: rgba(255, 193, 7, 0.04); margin-bottom: 25px;">
+            <div class="hero-left">
+                <div class="hero-icon-box">👑</div>
+                <div class="hero-text-stack">
+                    <div class="hero-title" style="color: #FFC107; font-weight: 800;">Upgrade to KitOut Pro Suite</div>
+                    <div class="hero-desc">Unlock professional VAT codes, profit markup sliders, live variation logs, and digital sign-off handover reports. Start 7-Day Free Trial.</div>
+                </div>
+            </div>
+            <div class="hero-arrow">❯</div>
+        </a>
+
+        <div class="subheading-label">Choose your trade</div>
+
+        <div class="trade-grid-container">
+            <a href="painting.html" class="grid-card">
+                <div class="grid-top-icon">🎨</div>
+                <div class="grid-meta-text">
+                    <div class="grid-title">Painting &amp;<br>Decorating</div>
+                    <div class="grid-desc">Paint, coverage &amp; labour</div>
+                </div>
+                <div class="grid-footer-arrow">➔</div>
+            </a>
+
+            <a href="tiling.html" class="grid-card">
+                <div class="grid-top-icon">🧱</div>
+                <div class="grid-meta-text">
+                    <div class="grid-title">Wall &amp; Floor<br>Tiling</div>
+                    <div class="grid-desc">Tiles, adhesive &amp; grout</div>
+                </div>
+                <div class="grid-footer-arrow">➔</div>
+            </a>
+
+            <a href="drywall.html" class="grid-card">
+                <div class="grid-top-icon">🪵</div>
+                <div class="grid-meta-text">
+                    <div class="grid-title">Drywall &amp; Stud<br>Walls</div>
+                    <div class="grid-desc">Boards, framing &amp; fixings</div>
+                </div>
+                <div class="grid-footer-arrow">➔</div>
+            </a>
+
+            <a href="decking.html" class="grid-card">
+                <div class="grid-top-icon">🏡</div>
+                <div class="grid-meta-text">
+                    <div class="grid-title">Garden Decking<br>&amp; Flooring</div>
+                    <div class="grid-desc">Decking, timber &amp; fixings</div>
+                </div>
+                <div class="grid-footer-arrow">➔</div>
+            </a>
+        </div>
+
+        <div class="subheading-label">Site tools</div>
+
+        <a href="snaglist.html" class="full-width-shelf">
+            <div class="shelf-left">
+                <div class="shelf-icon-box">📋</div>
+                <div class="shelf-text-stack">
+                    <div class="shelf-title">On-Site SnagList Tracker</div>
+                    <div class="shelf-desc">Track outstanding work and defects.</div>
+                </div>
+            </div>
+            <div class="shelf-arrow">❯</div>
+        </a>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5X5grTNEwXvHtkMPXiVdNoRO2OEozR_Y",
+            authDomain: "kitout-emails.firebaseapp.com",
+            projectId: "kitout-emails",
+            storageBucket: "kitout-emails.firebasestorage.app",
+            messagingSenderId: "393379398097",
+            appId: "1:393379398097:web:b82dc3d193b8b24824a0f0",
+            measurementId: "G-B4JQ81F5MQ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged(function (user) {
+            if (user && user.email) {
+                localStorage.setItem("kitout_user_session", user.email);
+                document.getElementById("sessionEmail").innerText = user.email;
+            } else {
+                localStorage.removeItem("kitout_user_session");
+                window.location.href = "index.html";
+            }
+        });
+
+        function logOut() {
+            auth.signOut().finally(function () {
+                localStorage.removeItem("kitout_user_session");
+                window.location.href = "index.html";
+            });
+        }
+    </script>
+</body>
+</html>
