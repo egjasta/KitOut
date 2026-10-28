@@ -3,200 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KitOut - Advanced Painting Dashboard</title>
+    <title>KitOut - Painting Room</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="logo.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0c0d0e;
             color: #ffffff;
             margin: 0;
-            padding: 15px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
         .container {
-            max-width: 480px;
+            max-width: 440px;
             width: 100%;
-            background: #2a2a2a;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border-top: 6px solid #FFC107;
+            display: flex;
+            flex-direction: column;
             box-sizing: border-box;
         }
-        .back-btn {
-            color: #FFC107;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 15px;
-            font-weight: 600;
-            font-size: 0.95em;
-        }
-        h1 {
-            color: #FFC107;
-            margin: 0 0 20px 0;
-            font-size: 1.8em;
-            font-weight: 800;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            font-size: 0.95em;
-            color: #ddd;
-        }
-        input, select {
-            width: 100%;
-            padding: 12px;
-            background: #333;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 1em;
-            box-sizing: border-box;
-        }
-        input:focus, select:focus {
-            border-color: #FFC107;
-            outline: none;
-        }
-        input[type="range"] {
-            padding: 0;
-            accent-color: #FFC107;
-        }
-        .toggle-group {
+        .app-bar {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            background: #333;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #444;
-        }
-        .toggle-label { font-weight: 500; font-size: 0.95em; }
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #555; transition: .3s; border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px;
-            background-color: white; transition: .3s; border-radius: 50%;
-        }
-        input:checked + .slider { background-color: #FFC107; }
-        input:checked + .slider:before { transform: translateX(24px); }
-        .hidden-panel {
-            display: none;
-            background: #222;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px dashed #444;
-        }
-        .variation-panel {
-            background: #232323;
-            border: 1px solid #3a3a3a;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-        .var-badge {
-            background: #CE1126;
-            color: #fff;
-            font-size: 0.75em;
-            font-weight: 700;
-            padding: 3px 6px;
-            border-radius: 4px;
-        }
-        .var-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            background: #1e1e1e;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-size: 0.9em;
-            border-left: 3px solid #CE1126;
-        }
-        .var-row button {
-            background: transparent;
-            border: 1px solid #555;
-            color: #aaa;
-            border-radius: 4px;
-            padding: 4px 8px;
-            cursor: pointer;
-            font-size: 0.75em;
-        }
-        .invoice-card {
-            background: #111;
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid #FFC107;
-            margin-top: 25px;
-        }
-        .invoice-title {
-            font-weight: 700;
-            color: #FFC107;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 8px;
-            font-size: 1.1em;
-        }
-        .invoice-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.95em;
-            color: #ccc;
             gap: 12px;
+            margin-top: 10px;
+            margin-bottom: 25px;
         }
-        .invoice-row span:last-child {
-            text-align: right;
-            white-space: nowrap;
-        }
-        .invoice-total {
+        .back-circle {
+            background: #1c1e22;
+            color: #FFC107;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            border-top: 1px dashed #444;
-            padding-top: 12px;
-            font-weight: 800;
-            font-size: 1.3em;
-            color: #FFC107;
-        }
-        .action-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            background: #FFC107;
-            color: #111;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: 700;
+            align-items: center;
+            justify-content: center;
             text-decoration: none;
-            margin-top: 15px;
-            border: none;
-            font-size: 1em;
-            cursor: pointer;
-            box-sizing: border-box;
+            font-weight: 700;
+            font-size: 0.9em;
         }
-        .action-btn.secondary {
-            background: #333;
+        .app-bar-title { font-size: 1.25em; font-weight: 700; color: #ffffff; margin: 0; }
+        .section-label { font-size: 0.85em; font-weight: 700; letter-spacing: 1px; color: #8a8d91; text-transform: uppercase; margin-top: 15px; margin-bottom: 12px; padding-left: 4px; }
+        .input-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; width: 100%; }
+        .card-input-box { background: #1c1e22; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; box-sizing: border-box; }
+        .card-input-box.full-width { grid-column: span 2; }
+        label { font-size: 0.78em; font-weight: 700; color: #8a8d91; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        input, select { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 1.15em; font-weight: 600; padding: 4px 0 0 0; box-sizing: border-box; }
+        input:focus, select:focus { outline: none; color: #FFC107; }
+        input[type="range"] { padding: 8px 0 0 0; accent-color: #FFC107; }
+        select option { background: #1c1e22; color: #fff; }
+        .camera-upload-btn {
+            background: #25282e;
+            border: 1px dashed #2d3139;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             color: #FFC107;
-            border: 1px solid #FFC107;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-top: 8px;
+            text-transform: none;
+            letter-spacing: 0;
         }
-        .action-btn:hover { opacity: 0.9; }
+        .camera-upload-btn:hover { background: #2d3139; }
+        .preview-thumbnail {
+            width: 100%;
+            height: auto;
+            max-height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid #444;
+        }
+        .shelf-toggle { background: #1c1e22; border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; box-sizing: border-box; }
+        .toggle-text-stack { display: flex; flex-direction: column; gap: 2px; }
+        .toggle-title { font-size: 1.05em; font-weight: 600; color: #ffffff; }
+        .toggle-desc { font-size: 0.82em; color: #8a8d91; }
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .2s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+        input:checked + .slider { background-color: #FFC107; }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .hidden-panel { display: none; background: #141619; border-radius: 14px; padding: 12px; margin-bottom: 12px; border: 1px dashed #2d3139; }
+        .variation-card { background: #1c1e22; border-radius: 14px; padding: 16px; margin-bottom: 12px; box-sizing: border-box; }
+        .var-badge { background: #CE1126; color: #fff; font-size: 0.75em; font-weight: 700; padding: 3px 6px; border-radius: 4px; }
+        .var-row { display: flex; justify-content: space-between; background: #0c0d0e; padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 0.9em; border-left: 3px solid #CE1126; }
+        .receipt-card { background: #1c1e22; border-radius: 16px; padding: 20px; margin-top: 15px; margin-bottom: 20px; box-sizing: border-box; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95em; color: #8a8d91; gap: 12px; }
+        .receipt-row span:last-child { color: #fff; text-align: right; }
+        .receipt-total { display: flex; justify-content: space-between; margin-top: 15px; border-top: 1px dashed #2d3139; padding-top: 14px; font-weight: 800; font-size: 1.4em; color: #FFC107; }
+        .action-button { display: block; width: 100%; background: #FFC107; color: #000000; padding: 16px; border-radius: 14px; font-weight: 700; font-size: 1.05em; border: none; cursor: pointer; margin-bottom: 12px; text-align: center; text-decoration: none; box-sizing: border-box; }
+        .action-button.secondary { background: #1c1e22; color: #FFC107; border: 1px solid rgba(255, 193, 7, 0.2); }
+        .markup-label { font-size: 0.9em; color: #aaa; margin-top: 6px; text-transform: none; letter-spacing: 0; font-weight: 600; }
         #pdfExportTarget {
             position: absolute;
             left: -9999px;
@@ -214,59 +123,77 @@
         #pdfExportTarget h2 { margin: 0 0 4px 0; color: #111; }
         #pdfExportTarget table { width: 100%; border-collapse: collapse; }
         #pdfExportTarget .pdf-grand { font-size: 1.4em; font-weight: 800; margin-top: 16px; }
+        #pdfPhotoEmbed { max-width: 220px; max-height: 140px; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.html" class="back-btn">⬅️ Back to Dashboard</a>
-        <h1>🎨 Painting Calculator</h1>
-
-        <div class="input-group">
-            <label>Project / Client Reference Name</label>
-            <input type="text" id="clientName" value="Mrs. Jones Bedroom" oninput="calculatePainting()">
-        </div>
-        <div class="input-group">
-            <label>Room Length (metres)</label>
-            <input type="number" id="length" value="4" min="0" step="0.1" oninput="calculatePainting()">
-        </div>
-        <div class="input-group">
-            <label>Room Width (metres)</label>
-            <input type="number" id="width" value="3" min="0" step="0.1" oninput="calculatePainting()">
-        </div>
-        <div class="input-group">
-            <label>Room Height (metres)</label>
-            <input type="number" id="height" value="2.5" min="0" step="0.1" oninput="calculatePainting()">
-        </div>
-        <div class="input-group">
-            <label>Number of Coats</label>
-            <select id="coats" onchange="calculatePainting()">
-                <option value="1">1 Coat</option>
-                <option value="2" selected>2 Coats</option>
-                <option value="3">3 Coats</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Project Finish Grade</label>
-            <select id="grade" onchange="calculatePainting()">
-                <option value="Standard">Standard Trade Matt Finish</option>
-                <option value="Premium">Premium Scrubbable Diamond Finish 💎</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Subtract Window/Door Area (m²)</label>
-            <input type="number" id="aperture" value="0" min="0" step="0.1" oninput="calculatePainting()">
+        <div class="app-bar">
+            <a href="dashboard.html" class="back-circle">❮</a>
+            <div class="app-bar-title">Painting &amp; Decorating</div>
         </div>
 
-        <div class="toggle-group">
-            <span class="toggle-label">Is Fresh Plaster?</span>
+        <div class="section-label">Job Parameters</div>
+
+        <div class="input-grid">
+            <div class="card-input-box full-width">
+                <label>Project Reference Name</label>
+                <input type="text" id="clientName" value="Mrs. Jones Bedroom" oninput="calculatePainting()">
+            </div>
+            <div class="card-input-box">
+                <label>Length (m)</label>
+                <input type="number" id="length" value="4.0" min="0" step="0.1" oninput="calculatePainting()">
+            </div>
+            <div class="card-input-box">
+                <label>Width (m)</label>
+                <input type="number" id="width" value="3.0" min="0" step="0.1" oninput="calculatePainting()">
+            </div>
+            <div class="card-input-box">
+                <label>Height (m)</label>
+                <input type="number" id="height" value="2.5" min="0" step="0.1" oninput="calculatePainting()">
+            </div>
+            <div class="card-input-box">
+                <label>Number of Coats</label>
+                <select id="coats" onchange="calculatePainting()">
+                    <option value="1">1 Coat</option>
+                    <option value="2" selected>2 Coats</option>
+                    <option value="3">3 Coats</option>
+                </select>
+            </div>
+            <div class="card-input-box full-width">
+                <label>Project Finish Grade</label>
+                <select id="grade" onchange="calculatePainting()">
+                    <option value="Standard">Standard Trade Matt Finish</option>
+                    <option value="Premium">Premium Scrubbable Diamond Finish 💎</option>
+                </select>
+            </div>
+            <div class="card-input-box full-width">
+                <label>Subtract Aperture Area (m² - Optional)</label>
+                <input type="number" id="aperture" value="0" min="0" step="0.1" oninput="calculatePainting()">
+                <label class="camera-upload-btn">
+                    📸 Capture Aperture Proof
+                    <input type="file" id="apertureCam" accept="image/*" capture="environment" style="display:none;" onchange="previewImage(this)">
+                </label>
+                <img id="camPreview" class="preview-thumbnail" alt="Aperture Image Preview">
+            </div>
+        </div>
+
+        <div class="shelf-toggle">
+            <div class="toggle-text-stack">
+                <div class="toggle-title">Fresh Plaster base</div>
+                <div class="toggle-desc">Automatically adds mist primer coat calculations</div>
+            </div>
             <label class="switch">
                 <input type="checkbox" id="freshPlaster" onchange="calculatePainting()">
                 <span class="slider"></span>
             </label>
         </div>
 
-        <div class="toggle-group">
-            <span class="toggle-label">➕ Include Labour Costs?</span>
+        <div class="shelf-toggle">
+            <div class="toggle-text-stack">
+                <div class="toggle-title">Include Labour Costs</div>
+                <div class="toggle-desc">Activate on-site trade day-rates tracking</div>
+            </div>
             <label class="switch">
                 <input type="checkbox" id="includeLabour" onchange="toggleLabourPanel()">
                 <span class="slider"></span>
@@ -274,79 +201,66 @@
         </div>
 
         <div id="labourPanel" class="hidden-panel">
-            <div class="input-group">
-                <label>Your Daily Trade Rate (£)</label>
-                <input type="number" id="dayRate" value="200" min="0" step="1" oninput="calculatePainting()">
-            </div>
-            <div class="input-group">
-                <label>Estimated Days Needed</label>
-                <input type="number" id="daysNeeded" value="1" min="0" step="0.5" oninput="calculatePaintingCustomDays()">
+            <div class="input-grid" style="margin-bottom: 0;">
+                <div class="card-input-box">
+                    <label>Day Rate (£)</label>
+                    <input type="number" id="dayRate" value="200" min="0" step="1" oninput="calculatePainting()">
+                </div>
+                <div class="card-input-box">
+                    <label>Days Needed</label>
+                    <input type="number" id="daysNeeded" value="1" min="0" step="0.5" oninput="calculatePaintingCustomDays()">
+                </div>
             </div>
         </div>
 
-        <div class="input-group">
-            <label>Builder Markup (%)</label>
+        <div class="card-input-box full-width" style="margin-bottom:12px;">
+            <label id="markupLabel">Builder Profit Markup (15%)</label>
             <input type="range" id="markup" min="0" max="50" value="15" oninput="updateMarkupLabel()">
-            <span id="markupLabel" style="font-size: 0.9em; color: #aaa;">15% Markup</span>
         </div>
 
-        <div class="toggle-group">
-            <span class="toggle-label">Include 20% UK VAT?</span>
+        <div class="shelf-toggle">
+            <div class="toggle-text-stack">
+                <div class="toggle-title">Apply UK VAT (20%)</div>
+                <div class="toggle-desc">Appends standard tax codes to totals</div>
+            </div>
             <label class="switch">
                 <input type="checkbox" id="includeVat" checked onchange="calculatePainting()">
                 <span class="slider"></span>
             </label>
         </div>
 
-        <div class="variation-panel">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <span style="font-weight:700; font-size:1em; color:#FFC107;">🛠️ Variation Change Orders</span>
-                <span class="var-badge" id="varCountBadge">0 Extra Requests</span>
+        <div class="variation-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="font-weight:700; color:#FFC107;">🛠️ Change Order Variations</span>
+                <span class="var-badge" id="varCountBadge">0 Logs</span>
             </div>
-            <div class="input-group" style="margin-bottom:8px;">
+            <div class="card-input-box" style="background:#0c0d0e; margin-bottom:10px;">
+                <label>Variation Description</label>
                 <input type="text" id="varNotes" placeholder="e.g., Gloss painting built-in wardrobe">
             </div>
-            <div style="display:flex; gap:10px;">
-                <input type="number" id="varCost" placeholder="Extra £" min="0" step="0.01">
-                <button type="button" class="action-btn" style="margin-top:0; width:auto; white-space:nowrap; padding:12px 16px;" onclick="addChangeOrder()">Add</button>
+            <div class="input-grid">
+                <div class="card-input-box">
+                    <label>Extra Cost (£)</label>
+                    <input type="number" id="varCost" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <button type="button" class="action-button" style="margin:0; align-self:stretch; display:flex; align-items:center; justify-content:center;" onclick="addChangeOrder()">➕ Add Log</button>
             </div>
             <div id="variationLogFeed"></div>
         </div>
 
-        <div class="invoice-card" id="invoiceCard">
-            <div class="invoice-title">🧾 LIVE ESTIMATE SUMMARY</div>
-            <div class="invoice-row">
-                <span>Calculated Area:</span>
-                <span id="outArea">0.00 m²</span>
-            </div>
-            <div class="invoice-row">
-                <span>Material Base Cost:</span>
-                <span id="outMaterials">£0.00</span>
-            </div>
-            <div class="invoice-row">
-                <span>Labour Base Cost:</span>
-                <span id="outLabour">£0.00</span>
-            </div>
-            <div class="invoice-row">
-                <span>Site Variation Logs:</span>
-                <span id="outVariations">£0.00</span>
-            </div>
-            <div class="invoice-row">
-                <span>Gross Admin Markup:</span>
-                <span id="outProfit">£0.00</span>
-            </div>
-            <div class="invoice-row">
-                <span>Calculated 20% VAT:</span>
-                <span id="outVat">£0.00</span>
-            </div>
-            <div class="invoice-total">
-                <span>TOTAL CONTRACT PRICE:</span>
-                <span id="outTotal">£0.00</span>
-            </div>
+        <div class="section-label">Summary Report</div>
+        <div class="receipt-card">
+            <div class="receipt-row"><span>Calculated Treatment Area:</span><span id="outArea">0.00 m²</span></div>
+            <div class="receipt-row"><span>Material Base Costs:</span><span id="outMaterials">£0.00</span></div>
+            <div class="receipt-row"><span>Labour Allocation Fees:</span><span id="outLabour">£0.00</span></div>
+            <div class="receipt-row"><span>Variation Adjustments:</span><span id="outVariations" style="color:#CE1126;">£0.00</span></div>
+            <div class="receipt-row"><span>Gross Admin Markup Margin:</span><span id="outProfit">£0.00</span></div>
+            <div class="receipt-row"><span>Standard UK VAT (20%):</span><span id="outVat">£0.00</span></div>
+            <div class="receipt-total"><span>TOTAL CLIENT QUOTE:</span><span id="outTotal">£0.00</span></div>
         </div>
 
-        <button type="button" class="action-btn" onclick="generatePdfQuote()">📄 Export Professional PDF Quote</button>
-        <a href="https://wickes.co.uk" target="_blank" class="action-btn secondary">🛒 Order Project Paint via Wickes</a>
+        <button type="button" class="action-button" onclick="generatePdfQuote()">📄 Export Professional PDF Quote</button>
+        <a href="https://wickes.co.uk" target="_blank" rel="noopener noreferrer" class="action-button secondary">🛒 Order Project Paint via Wickes</a>
     </div>
 
     <div id="pdfExportTarget">
@@ -356,10 +270,14 @@
             <p id="pdfDate">Date: --/--/----</p>
             <p id="pdfClientRef">Client: ----</p>
             <h3>1. Project Layout &amp; Dimension Specs</h3>
-            <p>Calculated Surface Treatment Area: <span id="pdfArea">0.00 m²</span></p>
+            <p>Calculated Treatment Surface Area: <span id="pdfArea">0.00 m²</span></p>
             <p>Specification Finish Grade Material: <span id="pdfGrade">Standard</span></p>
-            <p>Required Coats Configured: <span id="pdfCoats">2</span></p>
-            <h3>2. Breakdown of Costs &amp; Variations</h3>
+            <p>Required Coats Configured: <span id="pdfCoats">2 Coats</span></p>
+            <div id="pdfPhotoSection" style="display:none;">
+                <p>Aperture Deduction Visual Record:</p>
+                <img id="pdfPhotoEmbed" alt="Aperture deduction visual record">
+            </div>
+            <h3>2. Itemised Cost Synthesis Breakdown</h3>
             <table id="pdfCostTable"></table>
             <p>Thank you for your business. Generated securely via KitOut App.</p>
             <p>TOTAL ESTIMATED CONTRACT PRICE:</p>
@@ -370,6 +288,20 @@
     <script>
         let customDaysSet = false;
         let changeOrdersList = [];
+        let base64PhotoData = "";
+
+        function previewImage(input) {
+            const preview = document.getElementById("camPreview");
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                    base64PhotoData = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
         function toggleLabourPanel() {
             const panel = document.getElementById("labourPanel");
@@ -380,7 +312,7 @@
 
         function updateMarkupLabel() {
             const markup = document.getElementById("markup").value;
-            document.getElementById("markupLabel").innerText = markup + "% Markup";
+            document.getElementById("markupLabel").innerText = "Builder Profit Markup (" + markup + "%)";
             calculatePainting();
         }
 
@@ -393,7 +325,7 @@
             const notes = document.getElementById("varNotes").value.trim();
             const cost = parseFloat(document.getElementById("varCost").value) || 0;
             if (!notes || cost <= 0) {
-                alert("Please type a variation description and a valid extra cost value (£).");
+                alert("Please input valid variation specs.");
                 return;
             }
             changeOrdersList.push({ description: notes, price: cost });
@@ -403,16 +335,23 @@
             calculatePainting();
         }
 
+        function removeChangeOrder(index) {
+            changeOrdersList.splice(index, 1);
+            renderChangeOrders();
+            calculatePainting();
+        }
+
         function renderChangeOrders() {
             const feed = document.getElementById("variationLogFeed");
             const badge = document.getElementById("varCountBadge");
             feed.innerHTML = "";
-            badge.innerText = changeOrdersList.length + " Extra Requests";
-            changeOrdersList.forEach(function (item) {
+            badge.innerText = changeOrdersList.length + " Logs";
+            changeOrdersList.forEach(function (item, index) {
                 const row = document.createElement("div");
                 row.className = "var-row";
                 row.innerHTML = "<span>⚡ " + escapeHtml(item.description) +
-                    '</span> <span style="font-weight:700; color:#CE1126;">+£' + item.price.toFixed(2) + "</span>";
+                    '</span><span style="font-weight:700; color:#CE1126; cursor:pointer;" onclick="removeChangeOrder(' +
+                    index + ')">+£' + item.price.toFixed(2) + " ✕</span>";
                 feed.appendChild(row);
             });
         }
@@ -477,25 +416,27 @@
                 return;
             }
             const client = document.getElementById("clientName").value.trim() || "Valued Client";
-            const totalStr = document.getElementById("outTotal").innerText;
-            const areaStr = document.getElementById("outArea").innerText;
-            const gradeStr = document.getElementById("grade").value;
-            const coatsStr = document.getElementById("coats").value;
-
             document.getElementById("pdfDate").innerText = "Date: " + new Date().toLocaleDateString("en-GB");
             document.getElementById("pdfClientRef").innerText = "Client Ref: " + client;
-            document.getElementById("pdfArea").innerText = areaStr;
-            document.getElementById("pdfGrade").innerText = gradeStr;
-            document.getElementById("pdfCoats").innerText = coatsStr;
-            document.getElementById("pdfGrandTotal").innerText = totalStr;
+            document.getElementById("pdfArea").innerText = document.getElementById("outArea").innerText;
+            document.getElementById("pdfGrade").innerText = document.getElementById("grade").value;
+            document.getElementById("pdfCoats").innerText = document.getElementById("coats").value + " Coats";
+            document.getElementById("pdfGrandTotal").innerText = document.getElementById("outTotal").innerText;
 
-            const costTable = document.getElementById("pdfCostTable");
+            const pdfPhotoSec = document.getElementById("pdfPhotoSection");
+            const pdfPhotoEmbed = document.getElementById("pdfPhotoEmbed");
+            if (base64PhotoData !== "") {
+                pdfPhotoEmbed.src = base64PhotoData;
+                pdfPhotoSec.style.display = "block";
+            } else {
+                pdfPhotoSec.style.display = "none";
+            }
+
             let tableHtml =
                 "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Materials Base Allocation Costs</td>" +
                 "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outMaterials").innerText + "</td></tr>" +
                 "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Labour Allocation Estimate Fees</td>" +
                 "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outLabour").innerText + "</td></tr>";
-
             changeOrdersList.forEach(function (item) {
                 tableHtml +=
                     "<tr><td style='padding:10px; border-bottom:1px solid #eee; color:#CE1126; font-weight:600;'>⚡ Variation: " +
@@ -503,23 +444,20 @@
                     "</td><td style='padding:10px; text-align:right; border-bottom:1px solid #eee; color:#CE1126; font-weight:600;'>+£" +
                     item.price.toFixed(2) + "</td></tr>";
             });
-
             tableHtml +=
                 "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Administrative Markup Fee Margin</td>" +
                 "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outProfit").innerText + "</td></tr>" +
                 "<tr><td style='padding:10px; border-bottom:1px solid #eee;'>Calculated UK Standard VAT (20%)</td>" +
                 "<td style='padding:10px; text-align:right; border-bottom:1px solid #eee;'>" + document.getElementById("outVat").innerText + "</td></tr>";
-            costTable.innerHTML = tableHtml;
+            document.getElementById("pdfCostTable").innerHTML = tableHtml;
 
-            const element = document.getElementById("pdfExportTarget");
-            const options = {
+            html2pdf().set({
                 margin: 10,
                 filename: "KitOut_Quote_" + client.replace(/\s+/g, "_") + ".pdf",
                 image: { type: "jpeg", quality: 0.98 },
                 html2canvas: { scale: 2, logging: false },
                 jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-            };
-            html2pdf().set(options).from(element).save();
+            }).from(document.getElementById("pdfExportTarget")).save();
         }
 
         calculatePainting();
